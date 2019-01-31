@@ -1,9 +1,9 @@
 package com.ddm.vblog.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-
+import com.ddm.vblog.base.BaseController;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController {
 
 }
 

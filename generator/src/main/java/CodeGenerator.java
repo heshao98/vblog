@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class CodeGenerator {
 
     public static void main(String[] args) {
-        String[] a = {"vblog_article","vblog_article_tag","vblog_category","vblog_comment","vblog_log","vblog_tag","vblog_user","vblog_user_token"};
+        String[] a = {"sys_captcha","sys_config","sys_log","sys_menu","sys_oss","sys_role","sys_role_menu","sys_user_role"};
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
@@ -49,7 +49,7 @@ public class CodeGenerator {
 
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
-        strategy.setTablePrefix(new String[] { "vblog" });// 此处可以修改为您的表前缀
+        strategy.setTablePrefix(new String[] { "sys" });// 此处可以修改为您的表前缀
         strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
         strategy.setInclude(a); // 需要生成的表
 
