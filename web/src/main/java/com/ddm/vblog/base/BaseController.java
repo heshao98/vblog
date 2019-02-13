@@ -1,7 +1,11 @@
 package com.ddm.vblog.base;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ddm.vblog.entity.ResponseEntity;
+import com.ddm.vblog.entity.User;
+import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.utils.Stringer;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +16,7 @@ import java.util.Enumeration;
  * @Author: ddm
  * @Description: 基类Controller 封装基本操作
  */
+@Controller
 public class BaseController {
 
     @Resource
@@ -19,6 +24,9 @@ public class BaseController {
 
     @Resource
     protected HttpServletResponse response;
+
+    @Resource
+    protected UserService userService;
 
     /**
      * @param errorCode    错误代码
@@ -30,6 +38,13 @@ public class BaseController {
      */
     protected Object error(Integer errorCode, String errorMessage) {
         return new ResponseEntity(errorCode, errorMessage).toJson();
+    }
+
+    /**
+     * 根据用户名返回用户信息
+     */
+    protected User getUser(String account){
+        return userService.getOne(new QueryWrapper<User>().eq("account",account));
     }
 
     /**

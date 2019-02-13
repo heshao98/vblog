@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @EnableCaching
 @SpringBootApplication
-@MapperScan("mapper")
+@MapperScan("com.ddm.vblog.mapper")
 public class BlogApplication {
 
     public static void main(String[] args) {

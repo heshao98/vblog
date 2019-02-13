@@ -16,7 +16,14 @@ public interface UserService extends IService<User> {
     /**
      * 用户是否存在
      * @param account 用户名
-     * @return 结果
+     * @return
      */
     boolean userExist(String account);
+
+    /**
+     * 用户注册
+     * @param user 注册的用户信息
+     * @return
+     */
+    int register(User user);
 }

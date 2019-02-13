@@ -12,7 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author DindDangMao
  * @since 2019-01-29
  */
-@Mapper
 public interface ArticleMapper extends BaseMapper<Article> {
 
 }
