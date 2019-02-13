@@ -1,6 +1,5 @@
 package com.ddm.vblog.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
@@ -9,16 +8,11 @@ import com.ddm.vblog.exception.user.UserNotExistException;
 import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
-import com.ddm.vblog.utils.UUIDUtils;
 import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.user.UserLogin;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -71,7 +65,7 @@ public class LoginController extends BaseController {
      * @return
      */
     private String passwordAnalysis(User user){
-        return new SimpleHash("md5",user.getPassword(),ByteSource.Util.bytes(user.getSalt()),3).toBase64();
+        return new SimpleHash("md5",user .getPassword(),ByteSource.Util.bytes(user.getSalt()),3).toBase64();
     }
 
     /**
@@ -87,5 +81,10 @@ public class LoginController extends BaseController {
         } catch (BaseException e){
             throw e;
         }
+    }
+
+    @RequestMapping("/unauthorized/{message}")
+    public Object illegal(@PathVariable String message){
+        return error(message);
     }
 }

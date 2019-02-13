@@ -2,13 +2,17 @@ package com.ddm.vblog.shiro;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ddm.vblog.entity.User;
-import com.ddm.vblog.exception.user.UserNotExistException;
 import com.ddm.vblog.mapper.UserMapper;
-import org.apache.shiro.authc.*;
+import com.ddm.vblog.util.jwt.JwtToken;
+import com.ddm.vblog.util.jwt.JwtUtil;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
@@ -17,6 +21,7 @@ import javax.annotation.Resource;
  * @Date:2019/1/30 11:27
  * @Author ddm
  **/
+@Service
 public class ShiroRealm extends AuthorizingRealm {
 
     /**
@@ -25,9 +30,17 @@ public class ShiroRealm extends AuthorizingRealm {
     @Resource
     private UserMapper userMapper;
 
+
+    /**
+     * 大坑！，必须重写此方法，不然Shiro会报错
+     */
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JwtToken;
+    }
+
     /**
      * 给用户授权
-     *
      * @param principalCollection
      * @return
      */
@@ -45,16 +58,24 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-//        UsernamePasswordToken token = (UsernamePasswordToken)authenticationToken;
-//        User account = userMapper.selectOne(new QueryWrapper<>(User).eq("account", token.getUsername()));
-//        if(account == null) {
-//            throw new UserNotExistException("该用户名不存在！");
-//        }
-//        if(account.getStatus() == 0){
-//            throw new LockedAccountException("用户被锁定！");
-//        }
-//        if(account.getPassword().equals())
+        String token = (String)authenticationToken.getCredentials();
+        if(token == null){
+            throw new AuthenticationException("token不能为空!");
+        }
+        // 解密获得username，用于和数据库进行对比
+        String username = JwtUtil.getUsername(token);
+        if (username == null) {
+            throw new AuthenticationException("token无效!");
+        }
 
-        return null;
+        User userBean = userMapper.selectOne(new QueryWrapper<User>().eq("account",username));
+        if (userBean == null) {
+            throw new AuthenticationException("User didn't existed!");
+        }
+
+        if (! JwtUtil.verify(token, username, userBean.getPassword())) {
+            throw new AuthenticationException("token失效!");
+        }
+        return new SimpleAuthenticationInfo(JwtUtil.getUsername(token), token, this.getName());
     }
 }

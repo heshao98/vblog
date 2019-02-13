@@ -9,6 +9,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * @Description
@@ -41,15 +43,26 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("Authorization");
-
         JwtToken jwtToken = new JwtToken(token);
-        // 提交给realm进行登入，如果错误他会抛出异常并被捕获
-        getSubject(request, response).login(jwtToken);
+        try {
+            // 提交给realm进行登入，如果错误他会抛出异常并被捕获
+            getSubject(request, response).login(jwtToken);
+        } catch (Exception e){
+            responseError(response,e.getMessage());
+        }
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
     }
 
-
+    private void responseError(ServletResponse servletResponse, String message){
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        try {
+            message = URLEncoder.encode(message, "UTF-8");
+            response.sendRedirect("/unauthorized"+"/"+message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 对跨域提供支持
