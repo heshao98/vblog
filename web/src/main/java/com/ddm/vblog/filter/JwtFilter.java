@@ -29,8 +29,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         try {
-            executeLogin(request, response);
-            return true;
+            return executeLogin(request, response);
         } catch (Exception e) {
             return false;
         }
@@ -49,6 +48,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             getSubject(request, response).login(jwtToken);
         } catch (Exception e){
             responseError(response,e.getMessage());
+            return false;
         }
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
