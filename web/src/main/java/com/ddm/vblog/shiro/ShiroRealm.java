@@ -70,7 +70,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
         User userBean = userMapper.selectOne(new QueryWrapper<User>().eq("account",username));
         if (userBean == null) {
-            throw new AuthenticationException("User didn't existed!");
+            throw new AuthenticationException("用户不存在,请联系管理员!");
         }
 
         if (! JwtUtil.verify(token, username, userBean.getPassword())) {

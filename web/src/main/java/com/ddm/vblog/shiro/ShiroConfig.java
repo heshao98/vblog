@@ -63,10 +63,10 @@ public class ShiroConfig {
         filterRuleMap.put("/register","anon");
         filterRuleMap.put("/unauthorized/*","anon");
         filterRuleMap.put("/login","anon");
-        // 所有请求通过我们自己的JWT Filter
-        filterRuleMap.put("/**", "jwt");
         // 访问401和404页面不通过我们的Filter
         filterRuleMap.put("/401", "anon");
+        // 所有请求通过我们自己的JWT Filter
+        filterRuleMap.put("/**", "jwt");
         factoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return factoryBean;
     }

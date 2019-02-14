@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 
 /**
  * @Description
@@ -62,7 +61,7 @@ public class JwtUtil {
      * @return 加密的token
      */
     public static String sign(String username, String secret) {
-        Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+        //Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
         Algorithm algorithm = null;
         try {
             algorithm = Algorithm.HMAC256(secret);
@@ -72,14 +71,7 @@ public class JwtUtil {
         // 附带username信息
         return JWT.create()
                 .withClaim("username", username)
-                .withExpiresAt(date)
                 .sign(algorithm);
 
-    }
-
-    public static void main(String[] args) {
-        String a = "Realm+[com.ddm.vblog.shiro.ShiroRealm@51bc625a]+was+unable+to+find+account+data+for+the+submitted+AuthenticationToken+[com.ddm.vblog.util.jwt.JwtToken@43cf0190].";
-        String s = a.replaceAll("[+]", " ");
-        System.out.println(s);
     }
 }

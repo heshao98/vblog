@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
- * @Description
+ * @Description jwt过滤器
  * @Date:2019/1/30 18:02
  * @Author ddm
  **/
@@ -29,10 +29,11 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         try {
-            return executeLogin(request, response);
+            executeLogin(request, response);
         } catch (Exception e) {
             return false;
         }
+        return true;
     }
 
     /**
@@ -63,6 +64,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 对跨域提供支持

@@ -5,6 +5,8 @@ import com.ddm.vblog.entity.ResponseEntity;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.utils.Stringer;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -45,6 +47,24 @@ public class BaseController {
      */
     protected User getUser(String account){
         return userService.getOne(new QueryWrapper<User>().eq("account",account));
+    }
+
+    /**
+     * 获取到当前请求的用户实体信息
+     * @return
+     */
+    protected User currUser(){
+        Subject subject = SecurityUtils.getSubject();
+        return userService.getOne(new QueryWrapper<User>().eq("account",(String)subject.getPrincipal()));
+    }
+
+    /**
+     * 获取到当前请求用户的用户名
+     * @return
+     */
+    protected String getCurrUserName(){
+        Subject subject = SecurityUtils.getSubject();
+        return (String)subject.getPrincipal();
     }
 
     /**

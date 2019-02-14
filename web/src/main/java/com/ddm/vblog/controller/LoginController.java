@@ -1,6 +1,7 @@
 package com.ddm.vblog.controller;
 
 import com.ddm.vblog.base.BaseController;
+import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.exception.user.PassWordErrorException;
@@ -12,7 +13,10 @@ import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.user.UserLogin;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -47,7 +51,9 @@ public class LoginController extends BaseController {
             if(getUser != null){
                 user.setSalt(getUser.getSalt());
                 if(passwordAnalysis(user).equals(getUser.getPassword())){
-                    return success(JwtUtil.sign(getUser.getAccount(),getUser.getPassword()));
+                    String sign = JwtUtil.sign(getUser.getAccount(), getUser.getPassword());
+                    redisUtil.set(Common.ACCESS_TOKEN_NAME+getUser.getAccount(),sign,Common.ACCESS_TOKEN_EXPIRE_TIME);
+                    return success(sign);
                 } else{
                     throw new PassWordErrorException("密码错误！");
                 }

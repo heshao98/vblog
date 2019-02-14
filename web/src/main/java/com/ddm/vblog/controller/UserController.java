@@ -4,6 +4,7 @@ package com.ddm.vblog.controller;
 import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,7 @@ public class UserController extends BaseController {
         for (User user: list) {
             System.out.println(user.getAccount());
         }
+        System.out.println(SecurityUtils.getSubject().isAuthenticated());
         return success(list);
     }
 
