@@ -263,4 +263,13 @@ public class Stringer {
         return sb.toString();
     }
 
+    /**
+     * 去除双引号
+     * @param oldString
+     * @return
+     */
+    public static String removeSurplus(String oldString){
+        return oldString.substring(1,oldString.length() - 1);
+    }
+
 }

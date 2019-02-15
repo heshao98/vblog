@@ -1,16 +1,24 @@
 package com.ddm.vblog.filter;
 
+import com.ddm.vblog.common.Common;
+import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.util.jwt.JwtToken;
+import com.ddm.vblog.util.jwt.JwtUtil;
+import com.ddm.vblog.utils.RedisUtil;
+import com.ddm.vblog.utils.SpringContextUtil;
+import com.ddm.vblog.utils.UUIDUtils;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 /**
  * @Description jwt过滤器
@@ -18,6 +26,12 @@ import java.net.URLEncoder;
  * @Author ddm
  **/
 public class JwtFilter extends BasicHttpAuthenticationFilter {
+
+    @Resource
+    private RedisUtil redisUtil;
+
+    private String newAccessToken;
+
     /**
      * 执行登录认证
      *
@@ -28,10 +42,41 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        try {
-            executeLogin(request, response);
-        } catch (Exception e) {
-            return false;
+        redisUtil =  (RedisUtil) SpringContextUtil.getBean("redisUtil");
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String accessToken = httpRequest.getHeader("Authorization");
+        String username = JwtUtil.getUsername(accessToken);
+        if(redisUtil.exists(Common.ACCESS_TOKEN_NAME + username)){
+            try {
+                this.newAccessToken = accessToken;
+                executeLogin(request, response);
+            } catch (Exception e){
+                throw new BaseException(e);
+            }
+        } else{
+            String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
+            if(refreshToken == null && !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
+                try {
+                    String message = URLEncoder.encode("refreshToken过期或失效,请重新登录!", "UTF-8");
+                    httpResponse.sendRedirect("/unauthorized"+"/"+message);
+                } catch (IOException e){
+                    throw new BaseException(e);
+                }
+                return false;
+            } else{
+                String newRefreshToken = UUIDUtils.generateUuid();
+                this.newAccessToken = JwtUtil.sign(username,newRefreshToken);
+                redisUtil.set(Common.REFRE_TOKEN_NAME + username,newRefreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
+                redisUtil.set(Common.ACCESS_TOKEN_NAME + username,newAccessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
+                try {
+                    executeLogin(request, response);
+                } catch (Exception e){
+                    throw new BaseException(e);
+                }
+                httpResponse.setHeader("accessToken",newAccessToken);
+                httpResponse.setHeader("refreshToken",newRefreshToken);
+            }
         }
         return true;
     }
@@ -41,9 +86,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("Authorization");
-        JwtToken jwtToken = new JwtToken(token);
+        JwtToken jwtToken = new JwtToken(newAccessToken);
         try {
             // 提交给realm进行登入，如果错误他会抛出异常并被捕获
             getSubject(request, response).login(jwtToken);
@@ -53,6 +96,15 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
+    }
+
+    protected String getHeader(ServletRequest request,String value){
+        HttpServletRequest httpServletRequest = (HttpServletRequest)request;
+        if(value == null){
+            return httpServletRequest.getHeader("Authorization");
+        } else{
+            return value;
+        }
     }
 
     private void responseError(ServletResponse servletResponse, String message){

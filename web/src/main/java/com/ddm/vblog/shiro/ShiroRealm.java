@@ -1,10 +1,12 @@
 package com.ddm.vblog.shiro;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.mapper.UserMapper;
 import com.ddm.vblog.util.jwt.JwtToken;
 import com.ddm.vblog.util.jwt.JwtUtil;
+import com.ddm.vblog.utils.RedisUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -29,6 +31,9 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    RedisUtil redisUtil;
 
 
     /**
@@ -62,6 +67,7 @@ public class ShiroRealm extends AuthorizingRealm {
         if(token == null){
             throw new AuthenticationException("token不能为空!");
         }
+
         // 解密获得username，用于和数据库进行对比
         String username = JwtUtil.getUsername(token);
         if (username == null) {
@@ -73,9 +79,11 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("用户不存在,请联系管理员!");
         }
 
-        if (! JwtUtil.verify(token, username, userBean.getPassword())) {
+        String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
+        if (refreshToken != null && JwtUtil.verify(token, username, refreshToken)) {
+            return new SimpleAuthenticationInfo(JwtUtil.getUsername(token), token, this.getName());
+        } else{
             throw new AuthenticationException("token失效!");
         }
-        return new SimpleAuthenticationInfo(JwtUtil.getUsername(token), token, this.getName());
     }
 }

@@ -9,6 +9,7 @@ import com.ddm.vblog.exception.user.UserNotExistException;
 import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
+import com.ddm.vblog.utils.UUIDUtils;
 import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.user.UserLogin;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -44,16 +46,22 @@ public class LoginController extends BaseController {
      * @return
      */
     @PostMapping("login")
-    public Object login(User user){
+    public Object login(User user, HttpServletResponse response){
         try {
             ValidatorUtils.validateEntity(user, UserLogin.class);
             User getUser = getUser(user.getAccount());
             if(getUser != null){
                 user.setSalt(getUser.getSalt());
                 if(passwordAnalysis(user).equals(getUser.getPassword())){
-                    String sign = JwtUtil.sign(getUser.getAccount(), getUser.getPassword());
-                    redisUtil.set(Common.ACCESS_TOKEN_NAME+getUser.getAccount(),sign,Common.ACCESS_TOKEN_EXPIRE_TIME);
-                    return success(sign);
+                    String refreshToken = UUIDUtils.generateUuid();
+                    String accessToken = JwtUtil.sign(getUser.getAccount(),refreshToken);
+                    //将accessToken和refreshToken存入redis
+                    redisUtil.set(Common.REFRE_TOKEN_NAME + getUser.getAccount(),refreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
+                    redisUtil.set(Common.ACCESS_TOKEN_NAME+getUser.getAccount(),accessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
+                    redisUtil.set("aaa",getUser,1000L);
+                    response.setHeader("refreshToken",refreshToken);
+                    response.setHeader("accessToken",accessToken);
+                    return success("成功");
                 } else{
                     throw new PassWordErrorException("密码错误！");
                 }
@@ -61,7 +69,7 @@ public class LoginController extends BaseController {
                 throw new UserNotExistException("用户不存在！");
             }
         } catch (BaseException e){
-            throw e;
+            throw new BaseException("系统异常,登录失败!");
         }
     }
 

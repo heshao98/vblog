@@ -3,6 +3,7 @@ package com.ddm.vblog.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
@@ -78,6 +79,7 @@ public class RedisUtil {
         }
         return result.toString();
     }
+
     /**
      * 写入缓存
      *
@@ -88,6 +90,7 @@ public class RedisUtil {
     public boolean set(final String key, Object value) {
         boolean result = false;
         try {
+            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(Object.class));
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             result = true;
@@ -96,9 +99,29 @@ public class RedisUtil {
         }
         return result;
     }
+
     /**
      * 写入缓存
-     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean set(final String key, String value, Long expireTime) {
+        boolean result = false;
+        try {
+            redisTemplate.setValueSerializer(new StringRedisSerializer());
+            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+            operations.set(key, value);
+            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 写入缓存
      * @param key
      * @param value
      * @return
@@ -106,6 +129,7 @@ public class RedisUtil {
     public boolean set(final String key, Object value, Long expireTime) {
         boolean result = false;
         try {
+            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
