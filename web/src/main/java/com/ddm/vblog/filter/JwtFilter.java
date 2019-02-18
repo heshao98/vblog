@@ -26,12 +26,6 @@ import java.util.Objects;
  * @Author ddm
  **/
 public class JwtFilter extends BasicHttpAuthenticationFilter {
-
-    @Resource
-    private RedisUtil redisUtil;
-
-    private String newAccessToken;
-
     /**
      * 执行登录认证
      *
@@ -47,39 +41,50 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String accessToken = httpRequest.getHeader("Authorization");
         String username = JwtUtil.getUsername(accessToken);
-        if(redisUtil.exists(Common.ACCESS_TOKEN_NAME + username)){
-            try {
-                this.newAccessToken = accessToken;
-                executeLogin(request, response);
-            } catch (Exception e){
-                throw new BaseException(e);
-            }
-        } else{
-            String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
-            if(refreshToken == null && !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
+        try {
+            if(redisUtil.exists(Common.ACCESS_TOKEN_NAME + username)){
                 try {
-                    String message = URLEncoder.encode("refreshToken过期或失效,请重新登录!", "UTF-8");
-                    httpResponse.sendRedirect("/unauthorized"+"/"+message);
-                } catch (IOException e){
-                    throw new BaseException(e);
-                }
-                return false;
-            } else{
-                String newRefreshToken = UUIDUtils.generateUuid();
-                this.newAccessToken = JwtUtil.sign(username,newRefreshToken);
-                redisUtil.set(Common.REFRE_TOKEN_NAME + username,newRefreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
-                redisUtil.set(Common.ACCESS_TOKEN_NAME + username,newAccessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
-                try {
+                    this.newAccessToken = accessToken;
                     executeLogin(request, response);
                 } catch (Exception e){
                     throw new BaseException(e);
                 }
-                httpResponse.setHeader("accessToken",newAccessToken);
-                httpResponse.setHeader("refreshToken",newRefreshToken);
+            } else{
+                String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
+                if(refreshToken == null && !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
+                    try {
+                        String message = URLEncoder.encode("refreshToken过期或失效,请重新登录!", "UTF-8");
+                        httpResponse.sendRedirect("/unauthorized"+"/"+message);
+                    } catch (IOException e){
+                        throw new BaseException(e);
+                    }
+                    return false;
+                } else{
+                    String newRefreshToken = UUIDUtils.generateUuid();
+                    this.newAccessToken = JwtUtil.sign(username,newRefreshToken);
+                    redisUtil.set(Common.REFRE_TOKEN_NAME + username,newRefreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
+                    redisUtil.set(Common.ACCESS_TOKEN_NAME + username,newAccessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
+                    try {
+                        executeLogin(request, response);
+                    } catch (Exception e){
+                        throw new BaseException(e);
+                    }
+                    httpResponse.setHeader("accessToken",newAccessToken);
+                    httpResponse.setHeader("refreshToken",newRefreshToken);
+                }
             }
+            return true;
+        } catch (Exception e){
+            responseError(httpResponse,"系统异常!");
+            return false;
         }
-        return true;
     }
+
+
+    @Resource
+    private RedisUtil redisUtil;
+
+    private String newAccessToken;
 
     /**
      *

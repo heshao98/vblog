@@ -1,5 +1,6 @@
 package com.ddm.vblog.controller;
 
+import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.User;
@@ -45,6 +46,7 @@ public class LoginController extends BaseController {
      * @param user 用户信息
      * @return
      */
+    @SysLog("用户登录")
     @PostMapping("login")
     public Object login(User user, HttpServletResponse response){
         try {
@@ -54,13 +56,11 @@ public class LoginController extends BaseController {
                 user.setSalt(getUser.getSalt());
                 if(passwordAnalysis(user).equals(getUser.getPassword())){
                     String refreshToken = UUIDUtils.generateUuid();
+                    redisUtil.exists("!");
                     String accessToken = JwtUtil.sign(getUser.getAccount(),refreshToken);
                     //将accessToken和refreshToken存入redis
                     redisUtil.set(Common.REFRE_TOKEN_NAME + getUser.getAccount(),refreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
-                    redisUtil.set(Common.ACCESS_TOKEN_NAME+getUser.getAccount(),accessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
-                    redisUtil.set("aaa",getUser,1000L);
-                    response.setHeader("refreshToken",refreshToken);
-                    response.setHeader("accessToken",accessToken);
+                    redisUtil.set(Common.ACCESS_TOKEN_NAME + getUser.getAccount(),accessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
                     return success("成功");
                 } else{
                     throw new PassWordErrorException("密码错误！");
@@ -70,6 +70,8 @@ public class LoginController extends BaseController {
             }
         } catch (BaseException e){
             throw new BaseException("系统异常,登录失败!");
+        } catch (Exception e){
+            return error("系统异常!");
         }
     }
 
@@ -87,6 +89,7 @@ public class LoginController extends BaseController {
      * @param user 注册的用户信息
      * @return
      */
+    @SysLog("用户注册")
     @PostMapping("/register")
     public Object register(User user){
         try {

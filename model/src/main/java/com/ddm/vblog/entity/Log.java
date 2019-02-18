@@ -25,7 +25,7 @@ public class Log implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.UUID)
     private String id;
 
     /**
@@ -37,11 +37,6 @@ public class Log implements Serializable {
      * 访问Ip
      */
     private String ip;
-
-    /**
-     * 操作模块
-     */
-    private String module;
 
     /**
      * 访问方法
@@ -64,9 +59,14 @@ public class Log implements Serializable {
     private String operation;
 
     /**
+     * 访问的地址
+     */
+    private String url;
+
+    /**
      * 操作耗时
      */
-    private Long time;
+    private Double time;
 
     /**
      * 操作用户userId

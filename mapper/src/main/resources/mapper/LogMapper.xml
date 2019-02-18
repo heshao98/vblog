@@ -7,13 +7,13 @@
         <id column="id" property="id" />
         <result column="create_time" property="createTime" />
         <result column="ip" property="ip" />
-        <result column="module" property="module" />
         <result column="method" property="method" />
         <result column="params" property="params" />
         <result column="nickname" property="nickname" />
         <result column="operation" property="operation" />
         <result column="time" property="time" />
         <result column="user_id" property="userId" />
+        <result column="url" property="url" />
     </resultMap>
 
 </mapper>
