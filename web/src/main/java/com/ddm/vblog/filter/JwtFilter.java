@@ -6,6 +6,7 @@ import com.ddm.vblog.util.jwt.JwtToken;
 import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
 import com.ddm.vblog.utils.SpringContextUtil;
+import com.ddm.vblog.utils.Stringer;
 import com.ddm.vblog.utils.UUIDUtils;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String accessToken = httpRequest.getHeader("Authorization");
+        if(Stringer.isNullOrEmpty(accessToken) && Stringer.isNullOrEmpty(httpRequest.getHeader("refreshToken"))){
+            return true;
+        }
         String username = JwtUtil.getUsername(accessToken);
         try {
             if(redisUtil.exists(Common.ACCESS_TOKEN_NAME + username)){
@@ -75,6 +79,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             }
             return true;
         } catch (Exception e){
+            e.printStackTrace();
             responseError(httpResponse,"系统异常!");
             return false;
         }

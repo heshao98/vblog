@@ -3,6 +3,7 @@ package com.ddm.vblog.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -14,6 +15,7 @@ import java.io.Serializable;
  * @author DindDangMao
  * @since 2019-01-30
  */
+@Data
 @TableName("sys_menu")
 public class Menu implements Serializable {
 

@@ -5,20 +5,16 @@ import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
-import com.ddm.vblog.exception.user.PassWordErrorException;
-import com.ddm.vblog.exception.user.UserNotExistException;
 import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
 import com.ddm.vblog.utils.UUIDUtils;
 import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.user.UserLogin;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +27,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @Valid
+@Slf4j
 public class LoginController extends BaseController {
 
     @Resource
@@ -48,7 +45,7 @@ public class LoginController extends BaseController {
      */
     @SysLog("用户登录")
     @PostMapping("login")
-    public Object login(User user, HttpServletResponse response){
+    public Object login(@RequestBody User user, HttpServletResponse response){
         try {
             ValidatorUtils.validateEntity(user, UserLogin.class);
             User getUser = getUser(user.getAccount());
@@ -61,16 +58,20 @@ public class LoginController extends BaseController {
                     //将accessToken和refreshToken存入redis
                     redisUtil.set(Common.REFRE_TOKEN_NAME + getUser.getAccount(),refreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
                     redisUtil.set(Common.ACCESS_TOKEN_NAME + getUser.getAccount(),accessToken,Common.ACCESS_TOKEN_EXPIRE_TIME);
+                    response.setHeader("refreshToken",refreshToken);
+                    response.setHeader("accessToken",accessToken);
                     return success("成功");
                 } else{
-                    throw new PassWordErrorException("密码错误！");
+                    log.error("密码错误!");
+                    return error("密码错误!");
                 }
             } else{
-                throw new UserNotExistException("用户不存在！");
+                log.error("用户不存在!");
+                return error("用户不存在!");
             }
-        } catch (BaseException e){
-            throw new BaseException("系统异常,登录失败!");
         } catch (Exception e){
+            log.error("未知异常,登录失败:",e);
+            e.printStackTrace();
             return error("系统异常!");
         }
     }

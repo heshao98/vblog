@@ -11,4 +11,30 @@
         <result column="create_time" property="createTime" />
     </resultMap>
 
+    <!-- 获取某个用户的所有角色以及角色下的相应权限 -->
+    <resultMap id="authorization" type="com.ddm.vblog.entity.Role">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <collection property="menus" ofType="com.ddm.vblog.entity.Menu">
+            <id property="menuId" column="menu_id"/>
+            <result property="perms" column="perms"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAuthorization" resultMap="authorization">
+        SELECT
+            sr.role_id,
+            sr.role_name,
+            sm.menu_id,
+            sm.perms
+        FROM
+            vblog_user vu
+            LEFT JOIN sys_user_role sur ON vu.id = sur.user_id
+            LEFT JOIN sys_role sr ON sur.role_id = sr.role_id
+            LEFT JOIN sys_role_menu srm ON sr.role_id = srm.role_id
+            LEFT JOIN sys_menu sm ON srm.menu_id = sm.menu_id
+        WHERE
+          vu.account = #{username}
+    </select>
+
 </mapper>

@@ -1,11 +1,14 @@
 package com.ddm.vblog.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
  * @author DindDangMao
  * @since 2019-01-30
  */
+@Data
 @TableName("sys_role")
 public class Role implements Serializable {
 
@@ -42,5 +46,11 @@ public class Role implements Serializable {
      * 创建时间
      */
     private LocalDateTime createTime;
+
+    /**
+     * 角色拥有的权限
+     */
+    @TableField(exist = false)
+    private List<Menu> menus;
 
 }

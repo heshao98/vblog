@@ -2,7 +2,10 @@ package com.ddm.vblog.shiro;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ddm.vblog.common.Common;
+import com.ddm.vblog.entity.Menu;
+import com.ddm.vblog.entity.Role;
 import com.ddm.vblog.entity.User;
+import com.ddm.vblog.mapper.RoleMapper;
 import com.ddm.vblog.mapper.UserMapper;
 import com.ddm.vblog.util.jwt.JwtToken;
 import com.ddm.vblog.util.jwt.JwtUtil;
@@ -12,11 +15,15 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Description 授权认证
@@ -31,6 +38,9 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private RoleMapper roleMapper;
 
     @Resource
     RedisUtil redisUtil;
@@ -51,7 +61,28 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
+        String username = principalCollection.toString();
+        SimpleAuthorizationInfo simpleAuthorizationInfo = null;
+        if(username != null){
+            simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+            List<Role> roles = roleMapper.getAuthorization(username);
+            if(!roles.isEmpty()){
+                List<String> roleNames = roles.stream().map(Role::getRoleName).collect(Collectors.toList());
+                simpleAuthorizationInfo.addRoles(roleNames);
+                for (Role role : roles) {
+                    for (Menu menu : role.getMenus()) {
+                        if(menu.getPerms() != null){
+                            if(menu.getPerms().contains(",")){
+                                simpleAuthorizationInfo.addStringPermissions(Arrays.asList(menu.getPerms().split(",")));
+                            } else{
+                                simpleAuthorizationInfo.addStringPermission(menu.getPerms());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return simpleAuthorizationInfo;
     }
 
     /**
