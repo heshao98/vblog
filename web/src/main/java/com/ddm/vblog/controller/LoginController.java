@@ -53,7 +53,6 @@ public class LoginController extends BaseController {
                 user.setSalt(getUser.getSalt());
                 if(passwordAnalysis(user).equals(getUser.getPassword())){
                     String refreshToken = UUIDUtils.generateUuid();
-                    redisUtil.exists("!");
                     String accessToken = JwtUtil.sign(getUser.getAccount(),refreshToken);
                     //将accessToken和refreshToken存入redis
                     redisUtil.set(Common.REFRE_TOKEN_NAME + getUser.getAccount(),refreshToken,Common.REFRESH_TOKEN_EXPIRE_TIME);
