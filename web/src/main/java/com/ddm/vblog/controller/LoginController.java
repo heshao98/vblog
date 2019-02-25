@@ -12,6 +12,7 @@ import com.ddm.vblog.utils.UUIDUtils;
 import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.user.UserLogin;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class LoginController extends BaseController {
      * @return
      */
     @SysLog("用户登录")
-    @PostMapping("login")
+    @PostMapping(value = "login",produces = "application/json;charset=UTF-8")
     public Object login(@RequestBody User user, HttpServletResponse response){
         try {
             ValidatorUtils.validateEntity(user, UserLogin.class);
@@ -96,10 +97,30 @@ public class LoginController extends BaseController {
             ValidatorUtils.validateEntity(user, UserLogin.class);
             return userService.register(user);
         } catch (BaseException e){
+            log.error("用户注册失败:",e);
             throw e;
         }
     }
 
+    @SysLog("用户登出")
+    @GetMapping("/logout")
+    public Object logout(){
+        try {
+            SecurityUtils.getSubject().logout();
+            redisUtil.remove( "accessToken:" + getCurrUserName());
+            redisUtil.remove("refreshToken:" + getCurrUserName());
+        } catch (Exception e){
+            log.error("用户登出异常:", e);
+            throw new BaseException("用户登出异常!");
+        }
+        return success("已经登出!");
+    }
+
+    /**
+     * 错误信息返回
+     * @param message 错误信息字符串
+     * @return 错误信息
+     */
     @RequestMapping("/unauthorized/{message}")
     public Object illegal(@PathVariable String message){
         return error(message);

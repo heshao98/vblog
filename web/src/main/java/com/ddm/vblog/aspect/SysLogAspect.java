@@ -57,7 +57,15 @@ public class SysLogAspect extends BaseController {
                 objects.remove(i);
             }
         }
-
+        //开始记录请求时间
+        long startTime = System.currentTimeMillis();
+        Object obj = null;
+        try {
+            obj = joinPoint.proceed(joinPoint.getArgs());
+        } catch (Throwable e){
+            e.printStackTrace();
+            throw new BaseException("系统异常!");
+        }
         //封装log实体信息
         Log log = new Log();
         log.setCreateTime(LocalDateTime.now());
@@ -74,16 +82,6 @@ public class SysLogAspect extends BaseController {
             user = currUser();
             log.setUserId(user.getAccount());
             log.setNickname(user.getNickname());
-        }
-
-        //开始记录请求时间
-        long startTime = System.currentTimeMillis();
-        Object obj = null;
-        try {
-            obj = joinPoint.proceed(joinPoint.getArgs());
-        } catch (Throwable e){
-            e.printStackTrace();
-            throw new BaseException("系统异常!");
         }
         log.setTime((double)(System.currentTimeMillis() - startTime) / 1000);
         if(LOGIN.equals(joinPoint.getSignature().getName())){

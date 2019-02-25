@@ -45,6 +45,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             return true;
         }
         String username = JwtUtil.getUsername(accessToken);
+        if(username == null){
+            responseError(response,"accessToken无效!");
+        }
         try {
             if(redisUtil.exists(Common.ACCESS_TOKEN_NAME + username)){
                 try {
@@ -55,7 +58,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
                 }
             } else{
                 String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
-                if(refreshToken == null && !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
+                if(refreshToken == null || !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
                     try {
                         String message = URLEncoder.encode("refreshToken过期或失效,请重新登录!", "UTF-8");
                         httpResponse.sendRedirect("/unauthorized"+"/"+message);
