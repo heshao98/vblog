@@ -61,7 +61,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
                 if(refreshToken == null || !Objects.equals(refreshToken,httpRequest.getHeader("refreshToken"))){
                     try {
                         String message = URLEncoder.encode("refreshToken过期或失效,请重新登录!", "UTF-8");
-                        httpResponse.sendRedirect("/unauthorized"+"/"+message);
+                        responseError(response,message);
                     } catch (IOException e){
                         throw new BaseException(e);
                     }
@@ -124,7 +124,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             message = URLEncoder.encode(message, "UTF-8");
-            response.sendRedirect("/unauthorized"+"/"+message);
+            response.sendRedirect("http://localhost:8081/unauthorized"+"/"+message);
         } catch (IOException e) {
             e.printStackTrace();
         }
