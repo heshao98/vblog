@@ -55,7 +55,7 @@ public class LoginController extends BaseController {
         try {
             // 生产验证码字符串并保存到session中
             String createText = defaultKaptcha.createText();
-            redisUtil.set("rightCode",)
+            //redisUtil.set("rightCode",)
             // 使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
             BufferedImage challenge = defaultKaptcha.createImage(createText);
             ImageIO.write(challenge, "jpg", jpegOutputStream);
@@ -131,10 +131,11 @@ public class LoginController extends BaseController {
      */
     @SysLog("用户注册")
     @PostMapping("/register")
-    public Object register(User user){
+    public Object register(@RequestBody User user){
         try {
             ValidatorUtils.validateEntity(user, UserLogin.class);
-            return userService.register(user);
+            userService.register(user);
+            return success("注册成功!");
         } catch (BaseException e){
             log.error("用户注册失败:",e);
             throw e;

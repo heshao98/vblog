@@ -57,22 +57,25 @@ public class SysLogAspect extends BaseController {
                 objects.remove(i);
             }
         }
+        //封装log实体信息
+        Log log = new Log();
+        log.setParams(JSON.toJSONString(objects));
         //开始记录请求时间
         long startTime = System.currentTimeMillis();
         Object obj = null;
         try {
             obj = joinPoint.proceed(joinPoint.getArgs());
+        } catch(BaseException e){
+            throw e;
         } catch (Throwable e){
             e.printStackTrace();
             throw new BaseException("系统异常!");
         }
-        //封装log实体信息
-        Log log = new Log();
+
         log.setCreateTime(LocalDateTime.now());
         log.setUrl(request.getRequestURI());
         log.setIp(request.getRemoteAddr());
         log.setMethod(joinPoint.getSignature().getName());
-        log.setParams(JSON.toJSONString(objects));
         log.setOperation(sysLog.value());
 
         //当前请求的用户信息

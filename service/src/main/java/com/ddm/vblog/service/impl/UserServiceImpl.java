@@ -2,6 +2,7 @@ package com.ddm.vblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.user.UserAlreadyExistsException;
 import com.ddm.vblog.mapper.UserMapper;
@@ -10,8 +11,9 @@ import com.ddm.vblog.utils.UUIDUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Transactional
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
@@ -48,6 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(!userExist(user.getAccount())){
             user.setSalt(UUIDUtils.generateUuid());
             user.setPassword(new SimpleHash("md5",user.getPassword(),ByteSource.Util.bytes(user.getSalt()),3).toBase64());
+            user.setAvatar(Common.DEFAULT_IMAGE);
             user.setCreateTime(LocalDateTime.now());
             return userMapper.insert(user);
         } else{
