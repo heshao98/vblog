@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @since 2019-01-29
  */
 @Controller
-@RequestMapping("/")
+@RequestMapping("/article")
 public class ArticleController extends BaseController {
+
+
+
+
 
 }
 

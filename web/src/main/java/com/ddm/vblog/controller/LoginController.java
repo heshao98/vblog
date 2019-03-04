@@ -10,12 +10,14 @@ import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
 import com.ddm.vblog.utils.UUIDUtils;
 import com.ddm.vblog.utils.ValidatorUtils;
+import com.ddm.vblog.validation.group.user.Register;
 import com.ddm.vblog.validation.group.user.UserLogin;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -47,7 +49,8 @@ public class LoginController extends BaseController {
     DefaultKaptcha defaultKaptcha;
 
 
-    @RequestMapping("/defaultKaptcha")
+
+    @RequestMapping("/defaultKaptcha/{param}")
     public void defaultKaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
             throws Exception {
         byte[] captchaChallengeAsJpeg = null;
@@ -55,7 +58,7 @@ public class LoginController extends BaseController {
         try {
             // 生产验证码字符串并保存到session中
             String createText = defaultKaptcha.createText();
-            //redisUtil.set("rightCode",)
+            redisUtil.set("rightCode:"+ httpServletRequest.getRemoteAddr(),createText,Common.VERIFICATION_TIME);
             // 使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
             BufferedImage challenge = defaultKaptcha.createImage(createText);
             ImageIO.write(challenge, "jpg", jpegOutputStream);
@@ -63,7 +66,6 @@ public class LoginController extends BaseController {
             httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
         // 定义response输出类型为image/jpeg类型，使用response输出流输出图片的byte数组
         captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
         httpServletResponse.setHeader("Cache-Control", "no-store");
@@ -131,9 +133,12 @@ public class LoginController extends BaseController {
      */
     @SysLog("用户注册")
     @PostMapping("/register")
-    public Object register(@RequestBody User user){
+    public Object register(@RequestBody User user, HttpServletRequest request){
         try {
-            ValidatorUtils.validateEntity(user, UserLogin.class);
+            ValidatorUtils.validateEntity(user, Register.class);
+            if(!user.getVerificationCode().equals(redisUtil.get("rightCode:" + request.getRemoteAddr()))){
+                return error("验证码错误！");
+            }
             userService.register(user);
             return success("注册成功!");
         } catch (BaseException e){

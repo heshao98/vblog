@@ -13,6 +13,9 @@ public class Common {
     public static final String ACCESS_TOKEN_NAME = "accessToken:";
     public static final String REFRE_TOKEN_NAME = "refreshToken:";
 
+    //验证码存储时间
+    public static final Long VERIFICATION_TIME = 60L;
+
     public static final String DEFAULT_IMAGE = "http://heshaohua.oss-cn-beijing.aliyuncs.com/u%3D1205884360%2C3885573115%26fm%3D26%26gp%3D0.jpg";
 
 }

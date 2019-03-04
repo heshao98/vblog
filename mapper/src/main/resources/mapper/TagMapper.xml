@@ -10,4 +10,9 @@
         <result column="create_time" property="createTime" />
     </resultMap>
 
+    <!-- 获取最热标签的id -->
+    <select id="getHotTagId" resultType="java.lang.Integer">
+        select count(0) from vblog_article_tag GROUP BY tag_id desc limit 0,4
+    </select>
+
 </mapper>

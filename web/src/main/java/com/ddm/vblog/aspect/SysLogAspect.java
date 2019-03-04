@@ -53,7 +53,7 @@ public class SysLogAspect extends BaseController {
         }
         ArrayList<Object> objects = new ArrayList<>(Arrays.asList(joinPoint.getArgs()));
         for (int i = 0; i < objects.size(); i++) {
-            if(objects.get(i) instanceof HttpServletResponse){
+            if(objects.get(i) instanceof HttpServletResponse || objects.get(i) instanceof  HttpServletRequest){
                 objects.remove(i);
             }
         }
