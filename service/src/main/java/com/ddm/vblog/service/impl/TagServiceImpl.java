@@ -34,4 +34,5 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public List<Integer> getHotTagId() { ;
         return tagMapper.getHotTagId();
     }
+
 }

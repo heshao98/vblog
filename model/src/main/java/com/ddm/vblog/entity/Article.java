@@ -2,6 +2,7 @@ package com.ddm.vblog.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ddm.vblog.validation.group.article.ArticleSave;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  * @since 2019-01-29
  */
 @TableName("vblog_article")
+@Data
 public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;

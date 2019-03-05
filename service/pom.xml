@@ -13,6 +13,7 @@
     <artifactId>service</artifactId>
 
     <dependencies>
+
         <dependency>
             <groupId>com.ddm.vblog</groupId>
             <artifactId>mapper</artifactId>

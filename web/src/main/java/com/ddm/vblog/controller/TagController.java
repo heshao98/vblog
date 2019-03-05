@@ -1,18 +1,16 @@
 package com.ddm.vblog.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
-import com.ddm.vblog.entity.Tag;
+import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.TagService;
-import org.springframework.stereotype.Controller;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * <p>
@@ -22,8 +20,9 @@ import java.util.List;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Slf4j
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/tags")
 public class TagController extends BaseController {
 
 
@@ -33,9 +32,18 @@ public class TagController extends BaseController {
     @Resource
     TagService tagService;
 
+    /**
+     * 获取最热的一组标签(4 个)
+     * @return
+     */
+    @SysLog("获取最热标签信息")
     @GetMapping(value = "/hot_tag")
     public Object getHotTag(){
-        return success(tagService.listByIds(tagService.getHotTagId()));
+        try {
+            return success(tagService.listByIds(tagService.getHotTagId()));
+        } catch (Exception e){
+            throw new BaseException("系统异常,最热标签获取失败!");
+        }
     }
 
 }

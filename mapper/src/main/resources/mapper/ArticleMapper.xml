@@ -20,4 +20,35 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
+    <sql id="partColumn">
+        id,
+        user_id,
+        title,
+        summary,
+        view_num,
+        comment_num,
+        tags,
+        category_id,
+        create_time,
+        update_time
+    </sql>
+
+
+    <!-- 获取到最热文章 -->
+    <select id="getHotArticle" resultType="com.ddm.vblog.entity.Article">
+        select <include refid="partColumn"/>
+        from vblog_article order by view_num desc
+    </select>
+
+    <!-- 获取到最新的文章 -->
+    <select id="getNewArticle" resultType="com.ddm.vblog.entity.Article">
+        select <include refid="partColumn"/>
+        from vblog_article order by create_time desc
+    </select>
+
+    <!-- 取到文章创建时间的所有月份 -->
+    <select id="fileArticle" resultType="java.lang.String">
+        select date_format(create_time,'%Y-%m') as time from vblog_article GROUP BY time
+    </select>
+
 </mapper>

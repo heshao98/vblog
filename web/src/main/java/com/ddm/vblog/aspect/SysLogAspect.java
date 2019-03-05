@@ -49,7 +49,7 @@ public class SysLogAspect extends BaseController {
         try {
             request = requestAttributes.getRequest();
         } catch (NullPointerException e){
-            throw new BaseException("系统异常!");
+            throw new BaseException("请求异常!");
         }
         ArrayList<Object> objects = new ArrayList<>(Arrays.asList(joinPoint.getArgs()));
         for (int i = 0; i < objects.size(); i++) {
