@@ -1,5 +1,6 @@
 package com.ddm.vblog.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ddm.vblog.validation.group.article.ArticleSave;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -81,7 +83,7 @@ public class Article implements Serializable {
      * 文章标签
      */
     @NotNull(message = "标签不能为空",groups = {ArticleSave.class})
-    private String tags;
+    private String tagIds;
 
     /**
      * 文章分类ID
@@ -98,4 +100,23 @@ public class Article implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 文章的作者信息
+     */
+    @TableField(exist = false)
+    private User user;
+
+    /**
+     * 文章分类信息
+     */
+    @TableField(exist = false)
+    private Category category;
+
+    /**
+     * 该文章的标签
+     */
+    @TableField(exist = false)
+    private List<Tag> tags;
+
 }

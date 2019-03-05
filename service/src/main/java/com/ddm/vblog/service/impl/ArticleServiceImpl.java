@@ -55,4 +55,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public List<String> fileArticle() {
         return articleMapper.fileArticle();
     }
+
+    /**
+     * 获取该文章的详细信息
+     * @param id 文章id
+     * @return 文章信息
+     */
+    @Override
+    public Article getArticleById(String id) {
+
+        return articleMapper.getArticleById(id);
+    }
 }

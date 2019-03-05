@@ -36,4 +36,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return
      */
     List<String> fileArticle();
+
+    /**
+     * 获取该文章的详细信息
+     * @param id 文章id
+     * @return 文章信息
+     */
+    Article getArticleById(@Param("id") String id);
 }

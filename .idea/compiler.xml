@@ -17,12 +17,12 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="common" options="-parameters" />
-      <module name="generator" options="-parameters" />
-      <module name="mapper" options="-parameters" />
-      <module name="model" options="-parameters" />
-      <module name="service" options="-parameters" />
-      <module name="web" options="-parameters" />
+      <module name="common" options="" />
+      <module name="generator" options="" />
+      <module name="mapper" options="" />
+      <module name="model" options="" />
+      <module name="service" options="" />
+      <module name="web" options="" />
     </option>
   </component>
 </project>

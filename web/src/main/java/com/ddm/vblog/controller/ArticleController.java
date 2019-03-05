@@ -78,6 +78,7 @@ public class ArticleController extends BaseController {
         try {
             return success(articleService.page(page));
         } catch (Exception e){
+            e.printStackTrace();
             throw new BaseException("系统异常,文章加载失败!");
         }
     }
@@ -90,8 +91,9 @@ public class ArticleController extends BaseController {
     @GetMapping("view/{id}")
     public Object getArticleById(@PathVariable String id){
         try {
-            return success(articleService.getById(id));
+            return success(articleService.getArticleById(id));
         } catch (Exception e){
+            e.printStackTrace();
             throw new BaseException("系统异常,获取文章失败!");
         }
     }

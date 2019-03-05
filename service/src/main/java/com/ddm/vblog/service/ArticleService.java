@@ -34,4 +34,11 @@ public interface ArticleService extends IService<Article> {
      * @return
      */
     List<String> fileArticle();
+
+    /**
+     * 获取该文章的详细信息
+     * @param id 文章id
+     * @return 文章信息
+     */
+    Article getArticleById(String id);
 }

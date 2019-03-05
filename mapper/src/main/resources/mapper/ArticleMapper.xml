@@ -14,11 +14,55 @@
         <result column="view_num" property="viewNum" />
         <result column="comment_num" property="commentNum" />
         <result column="weight" property="weight" />
-        <result column="tags" property="tags" />
+        <result column="tags" property="tagIds" />
         <result column="category_id" property="categoryId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+
+    <!-- 通用查询映射结果(包括作者头像) -->
+    <resultMap id="BaseResultUserMap" type="com.ddm.vblog.entity.Article">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="nickname" property="nickname" />
+        <result column="title" property="title" />
+        <result column="summary" property="summary" />
+        <result column="content" property="content" />
+        <result column="content_html" property="contentHtml" />
+        <result column="view_num" property="viewNum" />
+        <result column="comment_num" property="commentNum" />
+        <result column="weight" property="weight" />
+        <result column="category_id" property="categoryId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <association property="user" javaType="com.ddm.vblog.entity.User">
+            <result column="avatar" property="avatar"/>
+        </association>
+        <association property="category" javaType="com.ddm.vblog.entity.Category">
+            <result column="category_name" property="categoryName"/>
+        </association>
+        <collection property="tags" ofType="com.ddm.vblog.entity.Tag">
+            <id column="t_id" property="id"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <sql id="column">
+        id,
+        user_id,
+        nickname,
+        title,
+        summary,
+        content,
+        content_html,
+        view_num,
+        comment_num,
+        weight,
+        tags,
+        category_id,
+        create_time,
+        update_time
+    </sql>
 
     <sql id="partColumn">
         id,
@@ -49,6 +93,37 @@
     <!-- 取到文章创建时间的所有月份 -->
     <select id="fileArticle" resultType="java.lang.String">
         select date_format(create_time,'%Y-%m') as time from vblog_article GROUP BY time
+    </select>
+
+    <!-- 获取该文章的详细信息 -->
+    <select id="getArticleById" resultMap="BaseResultUserMap">
+        SELECT
+            a.id,
+            user_id,
+            a.nickname,
+            title,
+            summary,
+            content,
+            content_html,
+            view_num,
+            comment_num,
+            weight,
+            tags,
+            category_id,
+            a.create_time,
+            a.update_time,
+            u.avatar,
+            c.category_name,
+            t.id AS t_id,
+            t.tag_name AS tag_name
+        FROM
+            vblog_article AS a
+            LEFT JOIN vblog_user AS u ON a.user_id = u.id
+            LEFT JOIN vblog_category AS c ON a.category_id = c.id
+            LEFT JOIN vblog_article_tag AS ag ON a.id = ag.article_id
+            LEFT JOIN vblog_tag t ON ag.tag_id = t.id
+        WHERE
+            a.id = #{id}
     </select>
 
 </mapper>

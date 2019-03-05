@@ -3,6 +3,7 @@ package com.ddm.vblog.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Data
 @TableName("vblog_category")
 public class Category implements Serializable {
 

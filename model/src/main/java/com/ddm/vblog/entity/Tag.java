@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -42,4 +43,5 @@ public class Tag implements Serializable {
      * 创建时间
      */
     private LocalDateTime createTime;
+
 }
