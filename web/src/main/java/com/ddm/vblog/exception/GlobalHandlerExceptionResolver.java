@@ -17,7 +17,8 @@ public class GlobalHandlerExceptionResolver extends BaseController {
 
     @ExceptionHandler(BaseException.class)
     public Object operateBaseException(BaseException e){
-        log.error(e.getMessage(),e);
+        e.getCause();
+        log.error(e.getMessage(),e.getCause());
         return error(e.getMessage());
     }
 

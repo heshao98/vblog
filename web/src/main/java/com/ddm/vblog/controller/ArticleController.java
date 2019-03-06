@@ -34,26 +34,26 @@ public class ArticleController extends BaseController {
 
     @SysLog("获取最热文章")
     @GetMapping("hot")
-    public Object getHotArticle(){
+    public Object getHotArticle() {
         try {
             IPage<Article> iPage = new Page<Article>();
             iPage.setCurrent(0);
             iPage.setSize(4);
             return success(articleService.getHotArticle(iPage).getRecords());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException("系统异常,获取最热文章失败!");
         }
     }
 
     @SysLog("获取最新文章")
     @GetMapping("new")
-    public Object getNewArticle(){
+    public Object getNewArticle() {
         try {
             IPage<Article> iPage = new Page<Article>();
             iPage.setCurrent(0);
             iPage.setSize(4);
             return success(articleService.getNewArticle(iPage).getRecords());
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,获取最热文章失败!");
         }
@@ -61,23 +61,24 @@ public class ArticleController extends BaseController {
 
     @SysLog("文章归档视图")
     @GetMapping("file")
-    public Object fileArticle(){
+    public Object fileArticle() {
         try {
             return success(articleService.fileArticle());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException("系统异常,文章归档失败!");
         }
     }
 
     /**
      * 首页加载文章数据
+     *
      * @return
      */
     @GetMapping("/")
-    public Object loadArticle(Page page){
+    public Object loadArticle(Page page) {
         try {
             return success(articleService.page(page));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,文章加载失败!");
         }
@@ -85,14 +86,15 @@ public class ArticleController extends BaseController {
 
     /**
      * 根据id获取某个文章
+     *
      * @return
      */
     @SysLog("根据id获取文章")
     @GetMapping("view/{id}")
-    public Object getArticleById(@PathVariable String id){
+    public Object getArticleById(@PathVariable String id) {
         try {
             return success(articleService.getArticleById(id));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,获取文章失败!");
         }

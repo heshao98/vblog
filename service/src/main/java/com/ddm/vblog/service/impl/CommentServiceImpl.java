@@ -6,6 +6,9 @@ import com.ddm.vblog.mapper.CommentMapper;
 import com.ddm.vblog.service.CommentService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.List;
+
 /**
  * <p>
  * 评论表 服务实现类
@@ -16,5 +19,18 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
+
+    @Resource
+    private CommentMapper commentMapper;
+
+    /**
+     * 获取文章的评论信息
+     * @param id 文章id
+     * @return
+     */
+    @Override
+    public List<Comment> getCommentByArticle(String id) {
+        return commentMapper.getCommentByArticle(id);
+    }
 
 }

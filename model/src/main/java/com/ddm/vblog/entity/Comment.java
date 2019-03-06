@@ -1,11 +1,14 @@
 package com.ddm.vblog.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Data
 @TableName("vblog_comment")
 public class Comment implements Serializable {
 
@@ -29,12 +33,12 @@ public class Comment implements Serializable {
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 文章ID
      */
-    private Long articleId;
+    private String articleId;
 
     /**
      * 评论内容
@@ -44,12 +48,12 @@ public class Comment implements Serializable {
     /**
      * 父评论Id
      */
-    private Long parentId;
+    private String parentId;
 
     /**
      * 评论的评论用户ID
      */
-    private Long toUid;
+    private String toUid;
 
     /**
      * 评论级别
@@ -66,5 +70,22 @@ public class Comment implements Serializable {
      */
     private LocalDateTime updateTime;
 
+    /**
+     * 自己评论数量
+     */
+    @TableField(exist = false)
+    private Integer subLevelCount;
+
+    /**
+     * 该评论的回复集合
+     */
+    @TableField(exist = false)
+    private List<Recovery> recoverys;
+
+    /**
+     * 评论人信息
+     */
+    @TableField(exist = false)
+    private User user;
 
 }

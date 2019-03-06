@@ -2,8 +2,11 @@ package com.ddm.vblog.controller;
 
 
 import com.ddm.vblog.base.BaseController;
+import com.ddm.vblog.service.CategoryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -14,8 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @since 2019-01-29
  */
 @Controller
-@RequestMapping("/category")
+//@RequestMapping("/category")
+@RequestMapping("/comments21")
 public class CategoryController extends BaseController {
+
+
+    @Resource
+    private CategoryService categoryService;
 
 }
 

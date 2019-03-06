@@ -82,6 +82,7 @@ public class Article implements Serializable {
     /**
      * 文章标签
      */
+    @TableField(exist = false)
     @NotNull(message = "标签不能为空",groups = {ArticleSave.class})
     private String tagIds;
 
