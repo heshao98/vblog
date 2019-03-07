@@ -1,11 +1,10 @@
 package com.ddm.vblog.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -16,14 +15,15 @@ import java.util.Date;
  * @since 2019-03-06
  */
 @Data
-@TableName("vblog_recovery")
-public class Recovery implements Serializable {
+@TableName("vblog_reply")
+public class Reply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 回复id
      */
+    @TableId(type = IdType.UUID)
     private String id;
 
     /**
@@ -42,18 +42,28 @@ public class Recovery implements Serializable {
     private String userId;
 
     /**
-     * 要回复的评论的用户id
+     * 用户昵称
      */
-    private String commentUserId;
+    private String nickname;
 
     /**
      * 创建时间
      */
-    private Date createTime;
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
     /**
-     * 回复的主人
+     * 父评论的用户昵称
      */
-    @TableField(exist = false)
-    private User user;
+    private String parentNickname;
+
+    /**
+     * 父评论的用户id
+     */
+    private String parentUserId;
+
+    /**
+     * 父评论id
+     */
+    private String parentId;
 }

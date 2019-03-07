@@ -1,6 +1,6 @@
 package com.ddm.vblog.mapper;
 
-import com.ddm.vblog.entity.Recovery;
+import com.ddm.vblog.entity.Reply;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author DindDangMao
  * @since 2019-03-06
  */
-public interface RecoveryMapper extends BaseMapper<Recovery> {
+public interface ReplyMapper extends BaseMapper<Reply> {
 
 }

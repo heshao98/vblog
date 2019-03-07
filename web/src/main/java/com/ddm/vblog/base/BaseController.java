@@ -67,6 +67,12 @@ public class BaseController {
         return (String)subject.getPrincipal();
     }
 
+    protected String getCurrUserId(){
+        Subject subject = SecurityUtils.getSubject();
+        return userService.getOne(new QueryWrapper<User>().select("id").eq("account",(String)subject.getPrincipal())).getId();
+    }
+
+
     /**
      * @param errorMessage 错误信息
      * @return

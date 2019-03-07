@@ -1,9 +1,6 @@
 package com.ddm.vblog.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,7 +24,7 @@ public class Comment implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.UUID)
     private String id;
 
     /**
@@ -63,6 +60,7 @@ public class Comment implements Serializable {
     /**
      * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
@@ -80,12 +78,23 @@ public class Comment implements Serializable {
      * 该评论的回复集合
      */
     @TableField(exist = false)
-    private List<Recovery> recoverys;
+    private List<Reply> reply;
 
     /**
-     * 评论人信息
+     * 此评论的回复数
      */
     @TableField(exist = false)
-    private User user;
+    private Integer replyCount;
+
+    /**
+     * 昵称
+     */
+    private String nickname;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
 
 }

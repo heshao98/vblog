@@ -21,48 +21,43 @@
         <result column="user_id" property="userId" />
         <result column="article_id" property="articleId" />
         <result column="content" property="content" />
-        <result column="parent_id" property="parentId" />
-        <result column="to_uid" property="toUid" />
-        <result column="level_flag" property="levelFlag" />
-        <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
-        <association property="user" javaType="com.ddm.vblog.entity.User">
-            <id column="u_id" property="id"/>
-            <result column="nickname" property="nickname"/>
-        </association>
-        <collection property="recoverys" ofType="com.ddm.vblog.entity.Recovery">
+        <result column="avatar" property="avatar" />
+        <result column="nickname" property="nickname" />
+        <result column="create_time" property="createTime"/>
+        <collection property="reply" ofType="com.ddm.vblog.entity.Reply">
             <id column="r_id" property="id"/>
             <result column="comment_id" property="commentId"/>
-            <result column="comment_user_id" property="commentUserId"/>
             <result column="r_content" property="content"/>
             <result column="r_create_time" property="createTime"/>
             <result column="r_user_id" property="userId"/>
-            <association property="user" javaType="com.ddm.vblog.entity.User">
-                <id column="u_id" property="id"/>
-                <result column="nickname" property="nickname"/>
-            </association>
+            <result column="r_nickname" property="nickname"/>
+            <result column="r_create_time" property="createTime"/>
+            <result column="r_parent_nickname" property="parentNickname"/>
+            <result column="r_parent_user_id" property="parentUserId"/>
+            <result column="r_parent_id" property="parentId"/>
         </collection>
     </resultMap>
 
     <!-- 根据文章id获取文章下的所有评论以及回复 -->
-    <select id="getCommentByArticle" resultMap="BaseResultMap">
-        select * from vblog_comment
-        <!--SELECT-->
-            <!--c.*,-->
-            <!--r.comment_id,-->
-            <!--r.comment_user_id,-->
-            <!--r.content AS r_content,-->
-            <!--r.create_time AS r_create_time,-->
-            <!--r.user_id AS r_user_id,-->
-            <!--u.nickname,-->
-            <!--u.id AS u_id-->
-        <!--FROM-->
-            <!--vblog_comment AS c-->
-            <!--LEFT JOIN vblog_recovery r ON c.id = r.comment_id-->
-            <!--LEFT JOIN vblog_user u ON r.user_id = u.id-->
-         <!--<if test="articleId != null and articleId != ''">-->
-             <!--c.id = #{articleId}-->
-         <!--</if>-->
+    <select id="getCommentByArticle" resultMap="BaseResultCommentMap">
+        SELECT
+            c.*,
+            r.id AS r_id,
+            r.comment_id,
+            r.content AS r_content,
+            r.create_time AS r_create_time,
+            r.user_id AS r_user_id,
+            r.nickname AS r_nickname,
+            r.parent_nickname as r_parent_nickname,
+            r.parent_user_id as r_parent_user_id,
+            r.parent_id as r_parent_id
+        FROM
+            vblog_comment AS c
+            LEFT JOIN vblog_reply r ON c.id = r.comment_id
+        WHERE
+            c.article_id = #{articleId}
+            order by create_time desc
     </select>
 
 </mapper>
