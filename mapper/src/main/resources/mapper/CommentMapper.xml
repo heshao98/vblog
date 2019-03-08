@@ -25,6 +25,7 @@
         <result column="avatar" property="avatar" />
         <result column="nickname" property="nickname" />
         <result column="create_time" property="createTime"/>
+        <result column="num" property="replyCount"/>
         <collection property="reply" ofType="com.ddm.vblog.entity.Reply">
             <id column="r_id" property="id"/>
             <result column="comment_id" property="commentId"/>
@@ -36,6 +37,12 @@
             <result column="r_parent_nickname" property="parentNickname"/>
             <result column="r_parent_user_id" property="parentUserId"/>
             <result column="r_parent_id" property="parentId"/>
+            <collection property="subReplys" ofType="com.ddm.vblog.entity.Reply">
+                <id property="id" column="sr_id"/>
+                <result property="parentId" column="sr_parent_id"/>
+                <result property="content" column="sr_content"/>
+                <result property="createTime" column="sr_create_time"/>
+            </collection>
         </collection>
     </resultMap>
 
@@ -49,15 +56,45 @@
             r.create_time AS r_create_time,
             r.user_id AS r_user_id,
             r.nickname AS r_nickname,
-            r.parent_nickname as r_parent_nickname,
-            r.parent_user_id as r_parent_user_id,
-            r.parent_id as r_parent_id
+            r.parent_nickname AS r_parent_nickname,
+            r.parent_user_id AS r_parent_user_id,
+            r.parent_id AS r_parent_id,
+            sr.sr_id,
+            sr.sr_content,
+            sr.sr_create_time,
+            sr.sr_parent_id,
+            count.num AS num
         FROM
             vblog_comment AS c
-            LEFT JOIN vblog_reply r ON c.id = r.comment_id
+            LEFT JOIN ( SELECT * FROM vblog_reply WHERE parent_id = '0') AS r ON c.id = r.comment_id
+            LEFT JOIN (
+            SELECT
+                id AS sr_id,
+                content AS sr_content,
+                create_time AS sr_create_time,
+                parent_id AS sr_parent_id
+            FROM
+                vblog_reply
+            WHERE
+                parent_id IN ( SELECT id FROM vblog_reply WHERE comment_id = '1' AND parent_id = '0' )
+            ) AS sr ON r.id = sr.sr_parent_id
+            LEFT JOIN (
+            SELECT
+                comment_id AS cid,
+                count( 0 ) AS num
+            FROM
+                vblog_reply,
+                ( SELECT id FROM vblog_comment ) AS c
+            WHERE
+                comment_id = c.id
+                AND parent_id = '0'
+            GROUP BY
+                comment_id
+            ) AS count ON c.id = count.cid
         WHERE
-            c.article_id = #{articleId}
-            order by create_time desc
+            c.article_id = '1'
+        ORDER BY
+            create_time DESC
     </select>
 
 </mapper>

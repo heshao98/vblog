@@ -35,11 +35,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public List<Comment> getCommentByArticle(String id) {
         List<Comment> commentByArticle = commentMapper.getCommentByArticle(id);
         commentByArticle.forEach(item -> {
-            if(item.getReply().isEmpty() || item.getReply() == null){
-                item.setReplyCount(0);
-            } else{
+            if(!item.getReply().isEmpty()){
                 item.setReply(item.getReply().stream().sorted(Comparator.comparing(Reply::getCreateTime).reversed()).collect(Collectors.toList()));
-                item.setReplyCount(item.getReply().size());
             }
         });
         return commentByArticle;

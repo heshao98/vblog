@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -66,4 +67,7 @@ public class Reply implements Serializable {
      * 父评论id
      */
     private String parentId;
+
+    @TableField(exist = false)
+    private List<Reply> subReplys;
 }
