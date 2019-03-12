@@ -1,11 +1,12 @@
 package com.ddm.vblog.controller;
 
-
 import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.Comment;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
+import com.ddm.vblog.page.Page;
+import com.ddm.vblog.service.ArticleService;
 import com.ddm.vblog.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,21 @@ public class CommentController extends BaseController {
     @Resource
     private CommentService commentService;
 
+    /**
+     * 注入文章service bean
+     */
+    @Resource
+    private ArticleService articleService;
+
     @SysLog("获取文章评论")
-    @GetMapping("/article/{id}")
-    public Object getArticleComment(@PathVariable String id) {
+    @GetMapping("/article/{id}/{comment_curr}")
+    public Object getArticleComment(@PathVariable String id,@PathVariable("comment_curr") Integer commentCurr) {
         try {
-            return success(commentService.getCommentByArticle(id));
+            Page<Comment> page = new Page<Comment>();
+            page.setSize(5);
+            page.setCurrent(commentCurr);
+            page.setList(commentService.getCommentByArticle(id,page));
+            return success(page);
         } catch (Exception e) {
             throw new BaseException("系统异常,获取文章评论失败!", e);
         }
@@ -53,7 +64,7 @@ public class CommentController extends BaseController {
             comment.setAvatar(user.getAvatar());
             comment.setUserId(user.getId());
             comment.setNickname(user.getNickname());
-            commentService.save(comment);
+            int result = commentService.saveComment(comment);
             user = null;
             return success(comment);
         } catch (Exception e){

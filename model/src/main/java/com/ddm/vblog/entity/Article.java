@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ddm.vblog.validation.group.article.ArticleSave;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @TableName("vblog_article")
 @Data
+@ToString
 public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;

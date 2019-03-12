@@ -59,14 +59,10 @@
             r.parent_nickname AS r_parent_nickname,
             r.parent_user_id AS r_parent_user_id,
             r.parent_id AS r_parent_id,
-            sr.sr_id,
-            sr.sr_content,
-            sr.sr_create_time,
-            sr.sr_parent_id,
             count.num AS num
         FROM
-            vblog_comment AS c
-            LEFT JOIN ( SELECT * FROM vblog_reply WHERE parent_id = '0') AS r ON c.id = r.comment_id
+            (select * from vblog_comment order by create_time desc limit #{page.current},#{page.size}) AS c
+            LEFT JOIN vblog_reply AS r ON c.id = r.comment_id
             LEFT JOIN (
             SELECT
                 id AS sr_id,
@@ -76,7 +72,7 @@
             FROM
                 vblog_reply
             WHERE
-                parent_id IN ( SELECT id FROM vblog_reply WHERE comment_id = '1' AND parent_id = '0' )
+                parent_id IN ( SELECT id FROM vblog_reply WHERE parent_id = '0' )
             ) AS sr ON r.id = sr.sr_parent_id
             LEFT JOIN (
             SELECT
@@ -92,7 +88,7 @@
                 comment_id
             ) AS count ON c.id = count.cid
         WHERE
-            c.article_id = '1'
+            c.article_id = #{articleId}
         ORDER BY
             create_time DESC
     </select>

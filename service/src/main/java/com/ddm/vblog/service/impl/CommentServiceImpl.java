@@ -1,11 +1,15 @@
 package com.ddm.vblog.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.Comment;
 import com.ddm.vblog.entity.Reply;
 import com.ddm.vblog.mapper.CommentMapper;
+import com.ddm.vblog.page.Page;
+import com.ddm.vblog.service.ArticleService;
 import com.ddm.vblog.service.CommentService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Comparator;
@@ -26,19 +30,37 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Resource
     private CommentMapper commentMapper;
 
+    @Resource
+    private ArticleService articleService;
+
     /**
      * 获取文章的评论信息
      * @param id 文章id
+     * @param page
      * @return
      */
     @Override
-    public List<Comment> getCommentByArticle(String id) {
-        List<Comment> commentByArticle = commentMapper.getCommentByArticle(id);
+    public List<Comment> getCommentByArticle(String id, Page<Comment> page) {
+        List<Comment> commentByArticle = commentMapper.getCommentByArticle(id,page);
         commentByArticle.forEach(item -> {
             if(!item.getReply().isEmpty()){
                 item.setReply(item.getReply().stream().sorted(Comparator.comparing(Reply::getCreateTime).reversed()).collect(Collectors.toList()));
             }
         });
         return commentByArticle;
+    }
+
+    /**
+     * 评论文章
+     * @param comment 评论信息
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int saveComment(Comment comment) {
+        commentMapper.insert(comment);
+        Article article = new Article();
+        article.setId(comment.getArticleId());
+        return 0;
     }
 }
