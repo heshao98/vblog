@@ -1,12 +1,11 @@
 package com.ddm.vblog.shiro;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ddm.vblog.common.Common;
 import com.ddm.vblog.entity.Menu;
 import com.ddm.vblog.entity.Role;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.mapper.RoleMapper;
-import com.ddm.vblog.mapper.UserMapper;
+import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.util.jwt.JwtToken;
 import com.ddm.vblog.util.jwt.JwtUtil;
 import com.ddm.vblog.utils.RedisUtil;
@@ -18,6 +17,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,8 +36,9 @@ public class ShiroRealm extends AuthorizingRealm {
     /**
      * 注入用户mapper
      */
+    @Lazy
     @Resource
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Resource
     private RoleMapper roleMapper;
@@ -105,14 +106,14 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("token无效!");
         }
 
-        User userBean = userMapper.selectOne(new QueryWrapper<User>().eq("account",username));
+        User userBean = userService.getByAccount(username);
         if (userBean == null) {
             throw new AuthenticationException("用户不存在,请联系管理员!");
         }
 
         String refreshToken = redisUtil.get(Common.REFRE_TOKEN_NAME + username);
         if (refreshToken != null && JwtUtil.verify(token, username, refreshToken)) {
-            return new SimpleAuthenticationInfo(JwtUtil.getUsername(token), token, this.getName());
+            return new SimpleAuthenticationInfo(userBean, token, this.getName());
         } else{
             throw new AuthenticationException("token失效!");
         }

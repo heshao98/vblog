@@ -5,6 +5,7 @@ import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.Comment;
 import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
+import com.ddm.vblog.exception.comment.CommentException;
 import com.ddm.vblog.page.Page;
 import com.ddm.vblog.service.ArticleService;
 import com.ddm.vblog.service.CommentService;
@@ -64,9 +65,11 @@ public class CommentController extends BaseController {
             comment.setAvatar(user.getAvatar());
             comment.setUserId(user.getId());
             comment.setNickname(user.getNickname());
-            int result = commentService.saveComment(comment);
+            commentService.save(comment);
             user = null;
             return success(comment);
+        } catch (CommentException e){
+            throw e;
         } catch (Exception e){
             throw new BaseException("系统异常,评论失败!");
         }

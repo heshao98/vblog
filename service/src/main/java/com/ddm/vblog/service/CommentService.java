@@ -26,10 +26,9 @@ public interface CommentService extends IService<Comment> {
 
     /**
      * 评论文章
-     * @param comment 评论信息
+     * @param comment
      * @return
      */
-    int saveComment(Comment comment);
-
-    void save();
+    @Override
+    boolean save(Comment comment);
 }

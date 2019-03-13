@@ -79,10 +79,8 @@ public class SysLogAspect extends BaseController {
         log.setOperation(sysLog.value());
 
         //当前请求的用户信息
-        String username = (String) SecurityUtils.getSubject().getPrincipal();
-        User user;
-        if(username != null){
-            user = currUser();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
+        if(user != null){
             log.setUserId(user.getAccount());
             log.setNickname(user.getNickname());
         }

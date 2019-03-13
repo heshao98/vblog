@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 public class CodeGenerator {
 
     public static void main(String[] args) {
-        String[] a = {"vblog_recovery"};
+        String[] a = {"vblog_article_view"};
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
         GlobalConfig gc = new GlobalConfig();

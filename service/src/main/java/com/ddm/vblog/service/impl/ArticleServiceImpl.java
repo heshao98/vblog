@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.mapper.ArticleMapper;
 import com.ddm.vblog.service.ArticleService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -61,9 +62,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param id 文章id
      * @return 文章信息
      */
+    @Cacheable(value = "Article",key = "#id")
     @Override
     public Article getArticleById(String id) {
-
         return articleMapper.getArticleById(id);
     }
 }

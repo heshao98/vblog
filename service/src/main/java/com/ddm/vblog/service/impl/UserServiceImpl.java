@@ -10,6 +10,7 @@ import com.ddm.vblog.service.UserService;
 import com.ddm.vblog.utils.UUIDUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,5 +58,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else{
             throw new UserAlreadyExistsException("用户名已经存在！");
         }
+    }
+
+    /**
+     * 根据传入的用户名获取用户信息
+     * @param username 用户名
+     * @return 用户实体信息
+     */
+    @Cacheable(value = "User",key = "#username")
+    @Override
+    public User getByAccount(String username) {
+        return userMapper.selectOne(new QueryWrapper<User>().eq("account",username));
     }
 }

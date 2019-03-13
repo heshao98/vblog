@@ -2,6 +2,7 @@ package com.ddm.vblog.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import com.ddm.vblog.validation.group.article.ArticleSave;
 import lombok.Data;
 import lombok.ToString;
@@ -121,5 +122,11 @@ public class Article implements Serializable {
      */
     @TableField(exist = false)
     private List<Tag> tags;
+
+    /**
+     * 一条数据的当前版本 (乐观锁)
+     */
+    @Version
+    private Integer version;
 
 }

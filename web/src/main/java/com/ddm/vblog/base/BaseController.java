@@ -55,7 +55,7 @@ public class BaseController {
      */
     protected User currUser(){
         Subject subject = SecurityUtils.getSubject();
-        return userService.getOne(new QueryWrapper<User>().eq("account",(String)subject.getPrincipal()));
+        return (User)subject.getPrincipal();
     }
 
     /**
@@ -64,12 +64,12 @@ public class BaseController {
      */
     protected String getCurrUserName(){
         Subject subject = SecurityUtils.getSubject();
-        return (String)subject.getPrincipal();
+        return ((User)subject.getPrincipal()).getAccount();
     }
 
     protected String getCurrUserId(){
         Subject subject = SecurityUtils.getSubject();
-        return userService.getOne(new QueryWrapper<User>().select("id").eq("account",(String)subject.getPrincipal())).getId();
+        return ((User)subject.getPrincipal()).getId();
     }
 
 

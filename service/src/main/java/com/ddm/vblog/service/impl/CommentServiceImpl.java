@@ -1,9 +1,11 @@
 package com.ddm.vblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.Comment;
 import com.ddm.vblog.entity.Reply;
+import com.ddm.vblog.exception.comment.CommentException;
 import com.ddm.vblog.mapper.CommentMapper;
 import com.ddm.vblog.page.Page;
 import com.ddm.vblog.service.ArticleService;
@@ -57,10 +59,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public int saveComment(Comment comment) {
-        commentMapper.insert(comment);
-        Article article = new Article();
-        article.setId(comment.getArticleId());
-        return 0;
+    public boolean save(Comment comment) throws CommentException {
+        int commentInsert = commentMapper.insert(comment);
+        Article article = articleService.getOne(new QueryWrapper<Article>().select("id","comment_num","version").eq("id",comment.getArticleId()));
+        Integer commentNum = article.getCommentNum();
+        article.setCommentNum(++commentNum);
+        boolean articleInsert = articleService.updateById(article);
+        if(commentInsert <= 0 || !articleInsert){
+            throw new CommentException("评论失败,请稍后重试!");
+        }
+        return true;
     }
 }
