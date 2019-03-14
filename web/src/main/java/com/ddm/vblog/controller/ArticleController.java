@@ -93,7 +93,9 @@ public class ArticleController extends BaseController {
     @GetMapping("view/{id}")
     public Object getArticleById(@PathVariable String id) {
         try {
-            return success(articleService.getArticleById(id));
+            Article articleById = articleService.getArticleById(id);
+            articleById.setViewNum(articleService.addArticleViewCount(id));
+            return success(articleById);
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,获取文章失败!");

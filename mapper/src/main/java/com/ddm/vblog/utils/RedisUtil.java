@@ -8,6 +8,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -78,6 +79,13 @@ public class RedisUtil {
             return null;
         }
         return result.toString();
+    }
+
+    public Object getObject(final String key) {
+        Object result = null;
+        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+        result = operations.get(key);
+        return result;
     }
 
     /**
@@ -160,4 +168,67 @@ public class RedisUtil {
         }
         return result;
     }
+
+    public boolean hmput(String h, String hk,Object value) {
+        boolean result = false;
+        try {
+            redisTemplate.opsForHash().put(h,hk,value);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public boolean hmHasKey(Object h, Object o){
+        boolean result = false;
+        try {
+            return redisTemplate.opsForHash().hasKey(h, o);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Long hmCountKey(Object h){
+        try {
+            return redisTemplate.opsForHash().size(h);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
+    public boolean lset(String key,long l, Object value){
+        boolean result = false;
+        try {
+            redisTemplate.opsForList().set(key,l,value);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public boolean lLeftPush(Object k, Object v){
+        boolean result = false;
+        try {
+            redisTemplate.opsForList().leftPush(k,v);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Set<String> keys(String k){
+        Set<String> set = new HashSet<String>();
+        try {
+            set = redisTemplate.keys(k);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return set;
+    }
+
 }

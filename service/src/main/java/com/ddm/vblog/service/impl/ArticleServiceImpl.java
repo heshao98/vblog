@@ -5,11 +5,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.mapper.ArticleMapper;
 import com.ddm.vblog.service.ArticleService;
+import com.ddm.vblog.shiro.ShiroSubjectManager;
+import com.ddm.vblog.utils.LocalDateTimeUtils;
+import com.ddm.vblog.utils.RedisUtil;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,6 +32,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @Resource
     private ArticleMapper articleMapper;
+
+    @Resource
+    private RedisUtil redisUtil;
+
+    private static final String REDIS_VIEW_COUNT = "ArticleViewCount::";
 
     /**
      * 获取到最热文章
@@ -57,6 +67,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleMapper.fileArticle();
     }
 
+
     /**
      * 获取该文章的详细信息
      * @param id 文章id
@@ -66,5 +77,33 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Article getArticleById(String id) {
         return articleMapper.getArticleById(id);
+    }
+
+    /**
+     * 增加文章的查看数
+     * @param id 文章id
+     * @return 返回当前文章查看数
+     */
+    @Override
+    public Integer addArticleViewCount(String id) {
+        try {
+            if(redisUtil.exists(REDIS_VIEW_COUNT + id)){
+                if(redisUtil.hmHasKey(REDIS_VIEW_COUNT + id, ShiroSubjectManager.getCurrUserName())){
+                    return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
+                } else{
+                    redisUtil.hmput(REDIS_VIEW_COUNT + id,ShiroSubjectManager.getCurrUserName(), LocalDateTimeUtils.now()+":"+id);
+                    return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
+                }
+            } else{
+                Map<String,String> map = new HashMap<String,String>();
+                map.put(ShiroSubjectManager.getCurrUserName(),LocalDateTimeUtils.now()+":"+id);
+                redisUtil.hmset(REDIS_VIEW_COUNT + id,map);
+                return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
+            }
+        } catch (Exception e){
+            System.out.println("redis挂了.......");
+            return 0;
+        }
+
     }
 }

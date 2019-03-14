@@ -41,4 +41,11 @@ public interface ArticleService extends IService<Article> {
      * @return 文章信息
      */
     Article getArticleById(String id);
+
+    /**
+     * 增加文章的查看数
+     * @param id 文章id
+     * @return 返回当前文章查看数
+     */
+    Integer addArticleViewCount(String id);
 }
