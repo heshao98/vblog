@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -91,10 +92,10 @@ public class ArticleController extends BaseController {
      */
     @SysLog("根据id获取文章")
     @GetMapping("view/{id}")
-    public Object getArticleById(@PathVariable String id) {
+    public Object getArticleById(@PathVariable String id, HttpServletRequest httpServletRequest) {
         try {
             Article articleById = articleService.getArticleById(id);
-            articleById.setViewNum(articleService.addArticleViewCount(id));
+            articleById.setViewNum(articleService.addArticleViewCount(id,httpServletRequest.getRemoteAddr()));
             return success(articleById);
         } catch (Exception e) {
             e.printStackTrace();

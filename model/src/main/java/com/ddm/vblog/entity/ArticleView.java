@@ -1,5 +1,7 @@
 package com.ddm.vblog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.ToString;
@@ -25,6 +27,7 @@ public class ArticleView implements Serializable {
     /**
      * id
      */
+    @TableId(type = IdType.UUID)
     private String id;
 
     /**

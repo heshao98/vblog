@@ -124,7 +124,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             message = URLEncoder.encode(message, "UTF-8");
-            response.sendRedirect("http://localhost:8081/unauthorized"+"/"+message);
+            response.sendRedirect("http://localhost:8081/unauthorized/"+message);
+            return;
         } catch (IOException e) {
             e.printStackTrace();
         }

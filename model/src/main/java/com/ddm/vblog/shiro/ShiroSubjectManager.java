@@ -20,6 +20,10 @@ public class ShiroSubjectManager {
         return ((User) subject.getPrincipal()).getAccount();
     }
 
+    public static boolean isLogin() {
+        Subject subject = SecurityUtils.getSubject();
+        return subject.isAuthenticated();
+    }
 
     public static String getCurrUserId(){
         Subject subject = SecurityUtils.getSubject();

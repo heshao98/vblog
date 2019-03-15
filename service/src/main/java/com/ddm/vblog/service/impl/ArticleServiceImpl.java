@@ -1,13 +1,17 @@
 package com.ddm.vblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.Article;
+import com.ddm.vblog.entity.ArticleView;
 import com.ddm.vblog.mapper.ArticleMapper;
 import com.ddm.vblog.service.ArticleService;
+import com.ddm.vblog.service.ArticleViewService;
 import com.ddm.vblog.shiro.ShiroSubjectManager;
 import com.ddm.vblog.utils.LocalDateTimeUtils;
 import com.ddm.vblog.utils.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,7 @@ import java.util.Map;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Slf4j
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
 
@@ -32,6 +37,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @Resource
     private ArticleMapper articleMapper;
+
+    /**
+     * 注入文章阅读数逻辑层bean
+     */
+    @Resource
+    private ArticleViewService articleViewService;
 
     @Resource
     private RedisUtil redisUtil;
@@ -82,27 +93,35 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     /**
      * 增加文章的查看数
      * @param id 文章id
+     * @param ip 发起请求的主机ip
      * @return 返回当前文章查看数
      */
     @Override
-    public Integer addArticleViewCount(String id) {
+    public Integer addArticleViewCount(String id, String ip) {
         try {
+            String token = "";
             if(redisUtil.exists(REDIS_VIEW_COUNT + id)){
-                if(redisUtil.hmHasKey(REDIS_VIEW_COUNT + id, ShiroSubjectManager.getCurrUserName())){
+                if(ShiroSubjectManager.isLogin()){
+                    token = ShiroSubjectManager.getCurrUserName();
+                } else{
+                    token = ip;
+                }
+                if(redisUtil.hmHasKey(REDIS_VIEW_COUNT + id, token)){
                     return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
                 } else{
-                    redisUtil.hmput(REDIS_VIEW_COUNT + id,ShiroSubjectManager.getCurrUserName(), LocalDateTimeUtils.now()+":"+id);
+                    redisUtil.hmput(REDIS_VIEW_COUNT + id,token, LocalDateTimeUtils.now()+":"+id);
                     return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
                 }
             } else{
                 Map<String,String> map = new HashMap<String,String>();
-                map.put(ShiroSubjectManager.getCurrUserName(),LocalDateTimeUtils.now()+":"+id);
+                map.put(token,LocalDateTimeUtils.now()+":"+id);
                 redisUtil.hmset(REDIS_VIEW_COUNT + id,map);
                 return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
             }
         } catch (Exception e){
-            System.out.println("redis挂了.......");
-            return 0;
+            e.printStackTrace();
+            log.info("redis获取数据异常,从数据库获取数据.");
+            return articleViewService.count(new QueryWrapper<ArticleView>().eq("article_id", id));
         }
 
     }
