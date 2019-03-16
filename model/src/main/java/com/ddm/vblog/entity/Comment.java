@@ -86,7 +86,7 @@ public class Comment implements Serializable {
      * 此评论的回复数
      */
     @TableField(exist = false)
-    private Integer replyCount;
+    private Integer replyCount = 0;
 
     /**
      * 昵称
