@@ -19,15 +19,15 @@ public interface CommentService extends IService<Comment> {
     /**
      * 获取文章的评论信息
      * @param id 文章id
-     * @param page
-     * @return
+     * @param page 分页信息
+     * @return 评论信息
      */
     List<Comment> getCommentByArticle(String id, Page<Comment> page);
 
     /**
      * 评论文章
-     * @param comment
-     * @return
+     * @param comment 要保存的评论信息
+     * @return 是否保存成功
      */
     @Override
     boolean save(Comment comment);

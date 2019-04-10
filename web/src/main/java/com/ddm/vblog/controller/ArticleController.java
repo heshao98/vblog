@@ -37,7 +37,7 @@ public class ArticleController extends BaseController {
     @GetMapping("hot")
     public Object getHotArticle() {
         try {
-            IPage<Article> iPage = new Page<Article>();
+            IPage<Article> iPage = new Page<>();
             iPage.setCurrent(0);
             iPage.setSize(4);
             return success(articleService.getHotArticle(iPage).getRecords());
@@ -50,7 +50,7 @@ public class ArticleController extends BaseController {
     @GetMapping("new")
     public Object getNewArticle() {
         try {
-            IPage<Article> iPage = new Page<Article>();
+            IPage<Article> iPage = new Page<>();
             iPage.setCurrent(0);
             iPage.setSize(4);
             return success(articleService.getNewArticle(iPage).getRecords());
@@ -72,11 +72,10 @@ public class ArticleController extends BaseController {
 
     /**
      * 首页加载文章数据
-     *
-     * @return
+     * @return 首页的文章数据信息
      */
     @GetMapping("/")
-    public Object loadArticle(Page page) {
+    public Object loadArticle(Page<Article> page) {
         try {
             return success(articleService.page(page));
         } catch (Exception e) {
@@ -87,8 +86,7 @@ public class ArticleController extends BaseController {
 
     /**
      * 根据id获取某个文章
-     *
-     * @return
+     * @return 根据id获取的文章信息
      */
     @SysLog("根据id获取文章")
     @GetMapping("view/{id}")
