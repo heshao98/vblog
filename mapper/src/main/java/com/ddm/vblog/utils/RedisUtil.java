@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -199,6 +200,23 @@ public class RedisUtil {
         return 0L;
     }
 
+    /**
+     * 将一个list集合放入该key的最右边
+     * @param key
+     * @param value
+     * @return
+     */
+    public <T> boolean lset(String key, List<T> value){
+        boolean result = false;
+        try {
+            redisTemplate.opsForList().rightPushAll(key,value);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public boolean lset(String key,long l, Object value){
         boolean result = false;
         try {
@@ -208,6 +226,21 @@ public class RedisUtil {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public <T> List<T> getList(Class<T> c,String key){
+        List range = redisTemplate.opsForList().range(key, 0, -1);
+        System.out.println(range);
+        return null;
+    }
+
+    public Long getListSize(String key){
+        try {
+            return redisTemplate.opsForList().size(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean lLeftPush(Object k, Object v){

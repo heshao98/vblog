@@ -7,7 +7,6 @@ import com.ddm.vblog.entity.User;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.exception.comment.CommentException;
 import com.ddm.vblog.page.Page;
-import com.ddm.vblog.service.ArticleService;
 import com.ddm.vblog.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -33,17 +32,12 @@ public class CommentController extends BaseController {
     @Resource
     private CommentService commentService;
 
-    /**
-     * 注入文章service bean
-     */
-    @Resource
-    private ArticleService articleService;
 
     @SysLog("获取文章评论")
     @GetMapping("/article/{id}/{comment_curr}")
     public Object getArticleComment(@PathVariable String id,@PathVariable("comment_curr") Integer commentCurr) {
         try {
-            Page<Comment> page = new Page<Comment>();
+            Page<Comment> page = new Page<>();
             page.setSize(5);
             page.setCurrent(commentCurr);
             page.setList(commentService.getCommentByArticle(id,page));
@@ -55,7 +49,7 @@ public class CommentController extends BaseController {
 
     /**
      * 给一个文章添加评论
-     * @return
+     * @return 文章的评论信息
      */
     @SysLog("评论文章")
     @PostMapping
@@ -66,7 +60,6 @@ public class CommentController extends BaseController {
             comment.setUserId(user.getId());
             comment.setNickname(user.getNickname());
             commentService.save(comment);
-            user = null;
             return success(comment);
         } catch (CommentException e){
             throw e;
