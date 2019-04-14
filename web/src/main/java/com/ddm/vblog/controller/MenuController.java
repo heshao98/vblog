@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/menu")
 public class MenuController extends BaseController {
+    //
 
 }
 
