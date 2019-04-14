@@ -77,7 +77,7 @@ public class ArticleController extends BaseController {
     @GetMapping("/")
     public Object loadArticle(Page<Article> page) {
         try {
-            return success(articleService.page(page));
+            return success(articleService.loadHomeArticle(page));
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,文章加载失败!");

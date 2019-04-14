@@ -73,7 +73,6 @@ public class RedisUtil {
      */
     public String get(final String key) {
         Object result = null;
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         result = operations.get(key);
         if(result==null){
@@ -118,7 +117,6 @@ public class RedisUtil {
     public boolean set(final String key, String value, Long expireTime) {
         boolean result = false;
         try {
-            redisTemplate.setValueSerializer(new StringRedisSerializer());
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
