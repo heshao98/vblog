@@ -74,6 +74,12 @@ public class SysLogAspect extends BaseController {
 
         log.setCreateTime(LocalDateTime.now());
         log.setUrl(request.getRequestURI());
+        if (request.getHeader("X-Real-IP") == null) {
+            log.setIp(request.getRemoteAddr());
+
+        } else{
+            log.setIp(request.getHeader("X-Real-IP"));
+        }
         log.setIp(request.getRemoteAddr());
         log.setMethod(joinPoint.getSignature().getName());
         log.setOperation(sysLog.value());

@@ -1,5 +1,7 @@
 package com.ddm.vblog.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -226,10 +228,8 @@ public class RedisUtil {
         return result;
     }
 
-    public <T> List<T> getList(Class<T> c,String key){
-        List range = redisTemplate.opsForList().range(key, 0, -1);
-        System.out.println(range);
-        return null;
+    public <T> List<T> getList(Class<T> c,Object key){
+        return JSONArray.parseArray(JSON.toJSONString(redisTemplate.opsForList().range(key, 0, -1)),c);
     }
 
     public Long getListSize(String key){
