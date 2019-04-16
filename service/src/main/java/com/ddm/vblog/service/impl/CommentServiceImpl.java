@@ -1,6 +1,7 @@
 package com.ddm.vblog.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.Comment;
 import com.ddm.vblog.entity.Reply;
 import com.ddm.vblog.exception.comment.CommentException;
@@ -13,6 +14,7 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Resource
     private RedisUtil redisUtil;
 
+    private static final int PAGE_NUM = 5;
+
     /**
      * 获取文章的评论信息
      * @param id 文章id
@@ -45,7 +49,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public List<Comment> getCommentByArticle(String id, Page<Comment> page) {
-        List<Comment> list = redisUtil.getList(Comment.class, "Comment::" + id);
+        List<Comment> list = redisUtil.getList(Comment.class,"Comment::" + id);
         if(!CollectionUtils.isEmpty(list)){
             return list;
         }
@@ -70,7 +74,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if(commentInsert <= 0){
             throw new CommentException("评论失败,请稍后重试!");
         }
-        redisUtil.lLeftPush(comment.getArticleId(),comment);
+        String rPrefix = "Comment::" + comment.getArticleId();
+        if(redisUtil.getListSize(rPrefix) < PAGE_NUM){
+            redisUtil.lLeftPush(rPrefix,comment);
+        } else{
+            redisUtil.lset(rPrefix,0,comment);
+        }
         return true;
     }
 }

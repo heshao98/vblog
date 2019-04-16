@@ -2,6 +2,7 @@ package com.ddm.vblog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.ArticleView;
@@ -62,7 +63,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     /**
      * 获取到最新的文章
      * @param iPage 分页对象
-     * @return
+     * @return 返回最新文章数据
      */
     @Override
     public IPage<Article> getNewArticle(IPage<Article> iPage) {
@@ -71,7 +72,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     /**
      * 获取文章归档视图
-     * @return
+     * @return 归档数据
      */
     @Override
     public List<String> fileArticle() {
@@ -113,7 +114,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
                 }
             } else{
-                Map<String,String> map = new HashMap<String,String>();
+                Map<String,String> map = new HashMap<>(10);
                 map.put(token,LocalDateTimeUtils.now()+":"+id);
                 redisUtil.hmset(REDIS_VIEW_COUNT + id,map);
                 return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
@@ -123,6 +124,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             log.info("redis获取数据异常,从数据库获取数据.");
             return articleViewService.count(new QueryWrapper<ArticleView>().eq("article_id", id));
         }
+    }
 
+    /**
+     * 加载首页文章数据
+     * @param page 分页信息
+     * @return 分页信息、文章列表
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public IPage<Article> loadHomeArticle(Page page) {
+        return articleMapper.selectPage(page,null);
     }
 }

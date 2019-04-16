@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.lang.reflect.Method;
+
 /**
  * @Description
  * @Date:2019/1/31 10:22
@@ -46,5 +48,4 @@ public class RedisConfig {
         template.afterPropertiesSet();
         return template;
     }
-
 }

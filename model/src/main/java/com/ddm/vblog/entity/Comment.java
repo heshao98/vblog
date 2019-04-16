@@ -2,6 +2,7 @@ package com.ddm.vblog.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -86,7 +87,7 @@ public class Comment implements Serializable {
      * 此评论的回复数
      */
     @TableField(exist = false)
-    private Integer replyCount;
+    private Integer replyCount = 0;
 
     /**
      * 昵称
@@ -97,7 +98,7 @@ public class Comment implements Serializable {
      * 头像
      */
     private String avatar;
-
+    
 
 
 }

@@ -1,6 +1,7 @@
 package com.ddm.vblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ddm.vblog.entity.Article;
 
@@ -49,4 +50,11 @@ public interface ArticleService extends IService<Article> {
      * @return 返回当前文章查看数
      */
     Integer addArticleViewCount(String id, String ip);
+
+    /**
+     * 加载首页文章数据
+     * @param page 分页信息
+     * @return 分页信息、文章列表
+     */
+    IPage<Article> loadHomeArticle(Page page);
 }
