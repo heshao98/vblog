@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -73,22 +72,17 @@ public class RedisUtil {
      * @param key
      * @return
      */
-    public String get(final String key) {
+    public String get(final Object key) {
         Object result = null;
-        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(key);
-        if(result==null){
-            return null;
-        }
-        return result.toString();
+        return redisTemplate.opsForValue().get(key).toString();
     }
 
-    public Object getObject(final String key) {
-        Object result = null;
-        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
-        result = operations.get(key);
-        return result;
-    }
+//    public Object getObject(final Object key) {
+//        Object result = null;
+//        return  redisTemplate.opsForValue().get(key)
+//        result = operations.get(key);
+//        return result;
+//    }
 
     /**
      * 写入缓存
@@ -122,6 +116,17 @@ public class RedisUtil {
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public boolean popRightPushLeft(Object key , Object l){
+        boolean result = false;
+        try {
+            redisTemplate.opsForList().rightPopAndLeftPush(key, l);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();

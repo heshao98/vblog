@@ -1,6 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
-<<<<<<< HEAD
-=======
 ### Example user template template
 ### Example user template
 
@@ -24,4 +22,3 @@ service/service.iml
 service/target/
 web/target/
 web/web.iml
->>>>>>> origin/master
