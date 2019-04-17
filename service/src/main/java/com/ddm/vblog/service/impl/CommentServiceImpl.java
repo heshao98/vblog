@@ -72,7 +72,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         if(redisUtil.getListSize(rPrefix) < PAGE_NUM){
             redisUtil.lLeftPush(rPrefix,comment);
         } else{
-            redisUtil.lset(rPrefix,0,comment);
+            redisUtil.leftPushRightPop(rPrefix, comment);
         }
         return true;
     }

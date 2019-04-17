@@ -3,9 +3,9 @@ package com.ddm.vblog.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -94,7 +94,6 @@ public class RedisUtil {
     public boolean set(final String key, Object value) {
         boolean result = false;
         try {
-            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer(Object.class));
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             result = true;
@@ -123,10 +122,12 @@ public class RedisUtil {
         return result;
     }
 
-    public boolean popRightPushLeft(Object key , Object l){
+    public boolean leftPushRightPop(Object key , Object l){
         boolean result = false;
         try {
-            redisTemplate.opsForList().rightPopAndLeftPush(key, l);
+            ListOperations listOperations = redisTemplate.opsForList();
+            listOperations.leftPush(key, l);
+            listOperations.rightPop(key);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +144,6 @@ public class RedisUtil {
     public boolean set(final String key, Object value, Long expireTime) {
         boolean result = false;
         try {
-            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
             ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
             operations.set(key, value);
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
