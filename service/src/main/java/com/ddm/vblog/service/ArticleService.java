@@ -54,7 +54,16 @@ public interface ArticleService extends IService<Article> {
     /**
      * 加载首页文章数据
      * @param page 分页信息
+     * @param date 日期
+     * @param tag 标签
      * @return 分页信息、文章列表
      */
-    IPage<Article> loadHomeArticle(Page page);
+    IPage<Article> loadHomeArticle(Page page, String date, String tag);
+
+    /**
+     * 获取一个文章的评论数
+     * @param articleId 文章id
+     * @return 文章评论数
+     */
+    int getCommentCount(String articleId);
 }

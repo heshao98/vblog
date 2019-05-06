@@ -31,4 +31,11 @@ public interface CommentService extends IService<Comment> {
      */
     @Override
     boolean save(Comment comment);
+
+    /**
+     * 获取文章评论数
+     * @param id 文章id
+     * @return 文章的评论数
+     */
+    int getArticleCommentCount(String id);
 }

@@ -129,11 +129,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     /**
      * 加载首页文章数据
      * @param page 分页信息
+     * @param date 日期
+     * @param tag 标签
      * @return 分页信息、文章列表
      */
     @SuppressWarnings("unchecked")
     @Override
-    public IPage<Article> loadHomeArticle(Page page) {
-        return articleMapper.selectPage(page,null);
+    public IPage<Article> loadHomeArticle(Page page, String date, String tag) {
+        IPage<Article> iPage = articleMapper.selectPage(page,null);
+        iPage.getRecords().forEach(item -> item.setViewNum(redisUtil.hmCountKey(REDIS_VIEW_COUNT + item.getId()).intValue()));
+        return iPage;
+    }
+
+    /**
+     * 获取一个文章的评论数
+     * @param articleId 文章id
+     * @return 文章评论数
+     */
+    @Override
+    public int getCommentCount(String articleId) {
+        return articleMapper.selectOne(new QueryWrapper<Article>().eq("id",articleId)).getCommentNum();
     }
 }

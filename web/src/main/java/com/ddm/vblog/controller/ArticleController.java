@@ -8,11 +8,9 @@ import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.ArticleService;
+import com.ddm.vblog.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +28,17 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/articles")
 public class ArticleController extends BaseController {
 
+    /**
+     * 注入文章逻辑层
+     */
     @Resource
     private ArticleService articleService;
+
+    /**
+     * 注入评论逻辑层
+     */
+    @Resource
+    private CommentService commentService;
 
     @SysLog("获取最热文章")
     @GetMapping("hot")
@@ -75,12 +82,12 @@ public class ArticleController extends BaseController {
      * @return 首页的文章数据信息
      */
     @GetMapping("/")
-    public Object loadArticle(Page<Article> page) {
+    public Object loadArticle(Page<Article> page, @RequestParam(required = false) String date, @RequestParam(required = false) String tag) {
         try {
-            return success(articleService.loadHomeArticle(page));
+            return success(articleService.loadHomeArticle(page,date,tag));
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BaseException("系统异常,文章加载失败!");
+            throw new BaseException("系统异常,文章加载失败!",e);
         }
     }
 
@@ -100,7 +107,5 @@ public class ArticleController extends BaseController {
             throw new BaseException("系统异常,获取文章失败!");
         }
     }
-
-
 }
 

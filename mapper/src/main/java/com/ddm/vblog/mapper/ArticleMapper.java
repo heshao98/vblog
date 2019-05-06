@@ -27,13 +27,13 @@ public interface ArticleMapper extends BaseMapper<Article> {
     /**
      * 获取到最新的文章信息
      * @param iPage 分页对象
-     * @return
+     * @return 最新文章信息
      */
     IPage<Article> getNewArticle(@Param("iPage") IPage<Article> iPage);
 
     /**
      * 获取文章归档视图
-     * @return
+     * @return 文章归档信息
      */
     List<String> fileArticle();
 
@@ -43,4 +43,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return 文章信息
      */
     Article getArticleById(@Param("id") String id);
+
+//    /**
+//     * 分页查询文章数据
+//     * @param page 分页信息
+//     * @return 文章数据
+//     */
+    //IPage<Article> selectByPage(Page page, String date, String tag);
 }

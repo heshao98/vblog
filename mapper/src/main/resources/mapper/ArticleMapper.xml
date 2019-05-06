@@ -128,4 +128,22 @@
         WHERE
             a.id = #{id}
     </select>
+
+    <!-- 根据查询条件获取文章数据 -->
+    <!--<select id="selectByPage" resultMap="BaseResultMap">-->
+        <!--SELECT-->
+            <!--id,-->
+            <!--user_id,-->
+            <!--nickname,-->
+            <!--title,-->
+            <!--summary,-->
+            <!--comment_num,-->
+            <!--weight,-->
+            <!--category_id,-->
+            <!--create_time,-->
+            <!--update_time-->
+        <!--FROM-->
+            <!--vblog_article-->
+        <!--LIMIT #{current},#{size} ORDER BY ${descs}-->
+    <!--</select>-->
 </mapper>
