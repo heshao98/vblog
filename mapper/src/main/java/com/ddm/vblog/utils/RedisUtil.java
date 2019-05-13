@@ -196,6 +196,14 @@ public class RedisUtil {
         return result;
     }
 
+    public Object hmGetValue(Object k, Object k2){
+        return  redisTemplate.opsForHash().get(k, k2);
+    }
+
+    public Object hmDelValue(Object k, Object k2){
+        return  redisTemplate.opsForHash().delete(k, k2);
+    }
+
     public Long hmCountKey(Object h){
         try {
             return redisTemplate.opsForHash().size(h);

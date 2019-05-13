@@ -51,18 +51,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public List<Comment> getCommentByArticle(String id, Page<Comment> page) {
-        List<Comment> list = redisUtil.getList(Comment.class,"Comment::" + id);
-        if(!CollectionUtils.isEmpty(list)){
-            return list;
+        if(page.getCurrent() == 1){
+            List<Comment> list = redisUtil.getList(Comment.class,"Comment::" + id);
+            if(!CollectionUtils.isEmpty(list)){
+                return list;
+            }
         }
         List<Comment> commentByArticle = commentMapper.getCommentByArticle(id,page);
         if(!CollectionUtils.isEmpty(commentByArticle)){
-        commentByArticle.forEach(item -> {
-            if(!item.getReply().isEmpty()){
-                item.setReply(item.getReply().stream().sorted(Comparator.comparing(Reply::getCreateTime).reversed()).collect(Collectors.toList()));
+            commentByArticle.forEach(item -> {
+                if(!item.getReply().isEmpty()){
+                    item.setReply(item.getReply().stream().sorted(Comparator.comparing(Reply::getCreateTime).reversed()).collect(Collectors.toList()));
+                }
+            });
+            if(page.getCurrent() == 1){
+                redisUtil.lset("Comment::" + id,commentByArticle);
             }
-        });
-        redisUtil.lset("Comment::" + id,commentByArticle);
         } else{
             commentByArticle = new ArrayList<>();
         }
