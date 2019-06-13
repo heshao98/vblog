@@ -14,6 +14,7 @@ import com.ddm.vblog.utils.RedisUtil;
 import com.ddm.vblog.utils.Stringer;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -78,12 +79,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      * @param comment 评论信息
      * @return 评论信息是否添加成功
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean save(Comment comment) throws CommentException {
         int commentInsert = commentMapper.insert(comment);
-        if(commentInsert <= 0){
-            throw new CommentException("系统异常,评论失败！");
-        }
         //获取当前文章的评论数，并且在当前数量基础上 + 1
         int count = articleService.getCommentCount(comment.getArticleId());
         Article article = new Article();
@@ -96,7 +95,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         } else{
             redisUtil.leftPushRightPop(rPrefix, comment);
         }
-        return true;
+        return commentInsert > 0;
     }
 
     /**

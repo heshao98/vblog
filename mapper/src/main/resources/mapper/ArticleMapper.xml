@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ddm.vblog.mapper.ArticleMapper">
-    <cache/>
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.ddm.vblog.entity.Article">
@@ -15,10 +14,13 @@
         <result column="view_num" property="viewNum" />
         <result column="comment_num" property="commentNum" />
         <result column="weight" property="weight" />
-        <result column="tags" property="tagIds" />
         <result column="category_id" property="categoryId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
+        <collection property="tags" ofType="com.ddm.vblog.entity.Tag">
+            <id column="t_id" property="id"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
     </resultMap>
 
     <!-- 通用查询映射结果(包括作者头像) -->
@@ -129,21 +131,41 @@
             a.id = #{id}
     </select>
 
-    <!-- 根据查询条件获取文章数据 -->
-    <!--<select id="selectByPage" resultMap="BaseResultMap">-->
-        <!--SELECT-->
-            <!--id,-->
-            <!--user_id,-->
-            <!--nickname,-->
-            <!--title,-->
-            <!--summary,-->
-            <!--comment_num,-->
-            <!--weight,-->
-            <!--category_id,-->
-            <!--create_time,-->
-            <!--update_time-->
-        <!--FROM-->
-            <!--vblog_article-->
-        <!--LIMIT #{current},#{size} ORDER BY ${descs}-->
-    <!--</select>-->
+     <!--根据查询条件获取文章数据-->
+    <select id="selectByPage" resultMap="BaseResultMap">
+        SELECT
+            a.id,
+            a.user_id,
+            a.nickname,
+            a.title,
+            a.summary,
+            a.comment_num,
+            a.weight,
+            a.category_id,
+            a.create_time,
+            a.update_time,
+            t.id as t_id,
+            t.tag_name
+        FROM
+            (
+            SELECT
+                id,
+                user_id,
+                nickname,
+                title,
+                summary,
+                comment_num,
+                weight,
+                category_id,
+                create_time,
+                update_time
+            FROM
+                vblog_article
+                LIMIT #{page.current},#{page.size}
+            ) AS a
+            LEFT JOIN vblog_article_tag AS vt ON a.id = vt.article_id
+            LEFT JOIN vblog_tag AS t ON vt.tag_id = t.id
+        ORDER BY
+            create_time DESC
+    </select>
 </mapper>

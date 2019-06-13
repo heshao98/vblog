@@ -82,7 +82,7 @@ public class ArticleController extends BaseController {
      * @return 首页的文章数据信息
      */
     @GetMapping("/")
-    public Object loadArticle(Page<Article> page, @RequestParam(required = false) String date, @RequestParam(required = false) String tag) {
+    public Object loadArticle(com.ddm.vblog.page.Page<Article> page, @RequestParam(required = false) String date, @RequestParam(required = false) String tag) {
         try {
             return success(articleService.loadHomeArticle(page,date,tag));
         } catch (Exception e) {

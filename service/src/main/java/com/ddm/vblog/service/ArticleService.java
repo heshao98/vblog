@@ -1,9 +1,9 @@
 package com.ddm.vblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ddm.vblog.entity.Article;
+import com.ddm.vblog.page.Page;
 
 import java.util.List;
 

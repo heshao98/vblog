@@ -13,10 +13,12 @@ public class CommentException extends BaseException {
 
     private int status = 200;
 
+    @Override
     public int getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(int status) {
         this.status = status;
     }

@@ -21,7 +21,6 @@ public class Page<T> implements Serializable {
 
     private List<T> list;
 
-    public void setCurrent(Integer current) {
-        this.current = (current - 1) * size;
-    }
+    private String[] descs;
+
 }

@@ -135,8 +135,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @SuppressWarnings("unchecked")
     @Override
-    public IPage<Article> loadHomeArticle(Page page, String date, String tag) {
-        IPage<Article> iPage = articleMapper.selectPage(page,null);
+    public IPage<Article> loadHomeArticle(com.ddm.vblog.page.Page page, String date, String tag) {
+        IPage<Article> iPage = new Page<>();
+        page.setCurrent((page.getCurrent()-1) * page.getSize());
+        iPage.setRecords(articleMapper.selectByPage(page,date,tag));
         iPage.getRecords().forEach(item -> item.setViewNum(redisUtil.hmCountKey(REDIS_VIEW_COUNT + item.getId()).intValue()));
         return iPage;
     }

@@ -3,6 +3,7 @@ package com.ddm.vblog.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ddm.vblog.entity.Article;
+import com.ddm.vblog.page.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -44,10 +45,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
      */
     Article getArticleById(@Param("id") String id);
 
-//    /**
-//     * 分页查询文章数据
-//     * @param page 分页信息
-//     * @return 文章数据
-//     */
-    //IPage<Article> selectByPage(Page page, String date, String tag);
+
+    /**
+     * 分页查询文章数据
+     * @param page 分页信息
+     * @return 文章数据
+     */
+    List<Article> selectByPage(@Param("page") Page page, @Param("date") String date, @Param("tag") String tag);
 }
