@@ -6,6 +6,7 @@ import com.ddm.vblog.web.WebApplicationTests;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Description
@@ -24,5 +25,13 @@ public class ArticleTest extends WebApplicationTests {
     public void testGetArticleById(){
         Article articleById = articleService.getArticleById("1");
         System.out.println(articleById.toString());
+    }
+
+
+    public static void main(String[] args) {
+        String a = "a";
+        String a2 = "a";
+        System.out.println(a.equals(a2));
+        System.out.println(a == a2);
     }
 }

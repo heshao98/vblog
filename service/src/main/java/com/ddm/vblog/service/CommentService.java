@@ -38,4 +38,12 @@ public interface CommentService extends IService<Comment> {
      * @return 文章的评论数
      */
     int getArticleCommentCount(String id);
+
+    /**
+     * 根据评论id获取一条评论信息
+     * 如果传入的id为空 则返回null
+     * @param id 评论id
+     * @return 评论信息
+     */
+    Comment getCommentById(String id);
 }

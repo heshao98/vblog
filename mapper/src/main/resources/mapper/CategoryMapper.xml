@@ -11,4 +11,19 @@
         <result column="create_time" property="createTime" />
     </resultMap>
 
+    <!-- 获取文章分类详情 -->
+    <select id="getAllDetail" resultType="com.ddm.vblog.dto.category.CategoryDTO">
+        SELECT
+            c.id,
+            c.category_name,
+            c.create_time,
+            c.avatar,
+            count( a.id ) AS article_count
+        FROM
+            vblog_category AS c
+            LEFT JOIN vblog_article AS a ON c.id = a.category_id
+        GROUP BY
+            ( c.id )
+    </select>
+
 </mapper>

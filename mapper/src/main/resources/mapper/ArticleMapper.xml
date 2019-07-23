@@ -33,7 +33,7 @@
         <result column="content" property="content" />
         <result column="content_html" property="contentHtml" />
         <result column="view_num" property="viewNum" />
-        <result column="c_num" property="commentNum" />
+        <result column="comment_num" property="commentNum" />
         <result column="weight" property="weight" />
         <result column="category_id" property="categoryId" />
         <result column="create_time" property="createTime" />
@@ -110,7 +110,7 @@
             content,
             content_html,
             view_num,
-            c_num.num as c_num,
+            comment_num,
             weight,
             tags,
             category_id,
@@ -121,7 +121,6 @@
             t.id AS t_id,
             t.tag_name AS tag_name
         FROM
-            ( SELECT count( 1 ) as num FROM vblog_comment WHERE article_id = #{id} ) AS c_num,
             vblog_article AS a
             LEFT JOIN vblog_user AS u ON a.user_id = u.id
             LEFT JOIN vblog_category AS c ON a.category_id = c.id

@@ -15,12 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalHandlerExceptionResolver extends BaseController {
 
-    @ExceptionHandler(BaseException.class)
-    public Object operateBaseException(BaseException e){
-        log.error(e.getMessage(),e.getCause());
-        return error(e.getMessage());
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     public Object unauthorizedException(UnauthorizedException e){
         log.error("访问无权限资源!");

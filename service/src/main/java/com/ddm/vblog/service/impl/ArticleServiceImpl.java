@@ -15,6 +15,7 @@ import com.ddm.vblog.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -29,8 +30,9 @@ import java.util.Map;
  * @author DindDangMao
  * @since 2019-01-29
  */
+@Transactional(rollbackFor = Exception.class)
 @Slf4j
-@Service
+@Service("articleServiceImpl")
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
 
     /**
@@ -85,7 +87,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param id 文章id
      * @return 文章信息
      */
-    @Cacheable(value = "Article",key = "#id")
+    @Cacheable(value = "Article", key = "#id")
     @Override
     public Article getArticleById(String id) {
         return articleMapper.getArticleById(id);
@@ -109,7 +111,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 }
                 if(redisUtil.hmHasKey(REDIS_VIEW_COUNT + id, token)){
                     return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
-                } else{
+                }
+                else {
                     redisUtil.hmput(REDIS_VIEW_COUNT + id,token, LocalDateTimeUtils.now()+":"+id);
                     return redisUtil.hmCountKey(REDIS_VIEW_COUNT + id).intValue();
                 }

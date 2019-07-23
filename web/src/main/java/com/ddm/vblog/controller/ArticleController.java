@@ -8,7 +8,6 @@ import com.ddm.vblog.base.BaseController;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.ArticleService;
-import com.ddm.vblog.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
  * <p>
  * 文章表 前端控制器
  * </p>
- *
  * @author DindDangMao
  * @since 2019-01-29
  */
@@ -34,27 +32,17 @@ public class ArticleController extends BaseController {
     @Resource
     private ArticleService articleService;
 
-    /**
-     * 注入评论逻辑层
-     */
-    @Resource
-    private CommentService commentService;
-
     @SysLog("获取最热文章")
-    @GetMapping("hot")
+    @GetMapping("/hot")
     public Object getHotArticle() {
-        try {
-            IPage<Article> iPage = new Page<>();
-            iPage.setCurrent(0);
-            iPage.setSize(4);
-            return success(articleService.getHotArticle(iPage).getRecords());
-        } catch (Exception e) {
-            throw new BaseException("系统异常,获取最热文章失败!");
-        }
+        IPage<Article> iPage = new Page<>();
+        iPage.setCurrent(0);
+        iPage.setSize(4);
+        return success(articleService.getHotArticle(iPage).getRecords());
     }
 
     @SysLog("获取最新文章")
-    @GetMapping("new")
+    @GetMapping("/new")
     public Object getNewArticle() {
         try {
             IPage<Article> iPage = new Page<>();
@@ -62,13 +50,12 @@ public class ArticleController extends BaseController {
             iPage.setSize(4);
             return success(articleService.getNewArticle(iPage).getRecords());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BaseException("系统异常,获取最热文章失败!");
         }
     }
 
     @SysLog("文章归档视图")
-    @GetMapping("file")
+    @GetMapping("/file")
     public Object fileArticle() {
         try {
             return success(articleService.fileArticle());
@@ -81,8 +68,10 @@ public class ArticleController extends BaseController {
      * 首页加载文章数据
      * @return 首页的文章数据信息
      */
-    @GetMapping("/")
-    public Object loadArticle(com.ddm.vblog.page.Page<Article> page, @RequestParam(required = false) String date, @RequestParam(required = false) String tag) {
+    @GetMapping
+    public Object loadArticle(com.ddm.vblog.page.Page<Article> page,
+                              @RequestParam(required = false) String date,
+                              @RequestParam(required = false) String tag) {
         try {
             return success(articleService.loadHomeArticle(page,date,tag));
         } catch (Exception e) {
@@ -96,7 +85,7 @@ public class ArticleController extends BaseController {
      * @return 根据id获取的文章信息
      */
     @SysLog("根据id获取文章")
-    @GetMapping("view/{id}")
+    @GetMapping("/view/{id}")
     public Object getArticleById(@PathVariable String id, HttpServletRequest httpServletRequest) {
         try {
             Article articleById = articleService.getArticleById(id);

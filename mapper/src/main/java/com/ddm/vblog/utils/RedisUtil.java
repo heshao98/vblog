@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -27,6 +29,11 @@ public class RedisUtil {
     @SuppressWarnings("rawtypes")
     @Autowired
     private RedisTemplate redisTemplate;
+
+    RedisSerializer valueSerializer() {
+        return this.redisTemplate.getValueSerializer();
+    }
+
     /**
      * 批量删除对应的value
      *

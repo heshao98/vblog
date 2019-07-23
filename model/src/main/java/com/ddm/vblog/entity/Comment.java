@@ -45,31 +45,11 @@ public class Comment implements Serializable {
     private String content;
 
     /**
-     * 父评论Id
-     */
-    private String parentId;
-
-    /**
-     * 评论的评论用户ID
-     */
-    private String toUid;
-
-    /**
-     * 评论级别
-     */
-    private String levelFlag;
-
-    /**
      * 创建时间
      */
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
     /**
      * 自己评论数量
@@ -93,6 +73,12 @@ public class Comment implements Serializable {
      * 昵称
      */
     private String nickname;
+
+    /**
+     * 逻辑删除
+     */
+    @TableLogic
+    private Integer deleted;
 
     /**
      * 头像

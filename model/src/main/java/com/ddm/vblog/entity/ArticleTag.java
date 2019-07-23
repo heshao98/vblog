@@ -20,6 +20,7 @@ public class ArticleTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 主键ID
      */
@@ -45,4 +46,8 @@ public class ArticleTag implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    public static void main(String[] args) {
+        Article art = new Article();
+    }
 }

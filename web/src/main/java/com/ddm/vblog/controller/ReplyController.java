@@ -14,6 +14,7 @@ import com.ddm.vblog.utils.ValidatorUtils;
 import com.ddm.vblog.validation.group.reply.ReplyCommentSave;
 import com.ddm.vblog.validation.group.reply.ReplySave;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,30 +46,41 @@ public class ReplyController extends BaseController {
     @Resource
     private CommentService commentService;
 
-    @SysLog("回复")
+    @SysLog("回复评论")
     @PostMapping
     public Object addReply(@RequestBody Reply reply){
-        try {
-            reply.setUserId(getCurrUserId());
-            if(reply.getFlag() == 0){
-                ValidatorUtils.validateEntity(reply, ReplySave.class);
-                if(reply.getUserId().equals(reply.getParentUserId())){
-                    throw new ReplyException("不能回复自己");
-                }
-            } else{
-                ValidatorUtils.validateEntity(reply, ReplyCommentSave.class);
-                if(reply.getUserId().equals(commentService.getOne(new QueryWrapper<Comment>().select("user_id").eq("id",reply.getCommentId())).getUserId())){
-                    throw new ReplyException("不能回复自己");
-                }
+        reply.setUserId(getCurrUserId());
+        //检测是否是回复的自己
+        int isOwner = checkReplyIsOwner(reply);
+        if(isOwner == -1){
+            return error("不能回复自己");
+        }
+        replyService.save(reply);
+        return success(reply);
+    }
+
+    /**
+     * 检测该条回复是否是回复的自己
+     * @param reply 回复实体信息
+     */
+    private int checkReplyIsOwner(Reply reply) {
+        String userId = commentService.getCommentById(reply.getCommentId()).getUserId();
+        if(reply.getFlag() == 0){
+            ValidatorUtils.validateEntity(reply, ReplySave.class);
+            if(reply.getUserId().equals(reply.getParentUserId())){
+                return -1;
             }
-            replyService.save(reply);
-            return success(reply);
-        } catch (ReplyException e){
-            throw e;
+
+            if(reply.getUserId().equals(userId)){
+                return -1;
+            }
+        } else {
+            ValidatorUtils.validateEntity(reply, ReplyCommentSave.class);
+            if(reply.getUserId().equals(userId)){
+                return -1;
+            }
         }
-        catch (Exception e){
-            throw new BaseException("系统异常,回复失败!",e);
-        }
+        return 1;
     }
 }
 

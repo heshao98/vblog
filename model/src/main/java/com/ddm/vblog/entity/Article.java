@@ -1,9 +1,7 @@
 package com.ddm.vblog.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
+import com.baomidou.mybatisplus.annotation.*;
 import com.ddm.vblog.validation.group.article.ArticleSave;
 import lombok.Data;
 import lombok.ToString;
@@ -26,11 +24,10 @@ import java.util.List;
 @ToString
 public class Article implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * 主键ID
      */
+    @TableId(value = "id",type = IdType.UUID)
     private String id;
 
     /**
