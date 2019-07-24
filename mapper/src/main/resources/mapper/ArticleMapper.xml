@@ -160,6 +160,9 @@
                 update_time
             FROM
                 vblog_article
+            <if test="date != null and date != ''">
+                where DATE_FORMAT(create_time, '%Y-%m') = #{date}
+            </if>
                 LIMIT #{page.current},#{page.size}
             ) AS a
             LEFT JOIN vblog_article_tag AS vt ON a.id = vt.article_id

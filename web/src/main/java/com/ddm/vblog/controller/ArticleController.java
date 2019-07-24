@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -78,6 +79,10 @@ public class ArticleController extends BaseController {
             e.printStackTrace();
             throw new BaseException("系统异常,文章加载失败!",e);
         }
+    }
+
+    public static void main(String[] args) {
+        HashMap<String,String> hashMap = new HashMap<>();
     }
 
     /**
