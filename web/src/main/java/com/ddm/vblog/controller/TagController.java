@@ -3,6 +3,8 @@ package com.ddm.vblog.controller;
 
 import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
+import com.ddm.vblog.dto.tag.TagDTO;
+import com.ddm.vblog.entity.Tag;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.TagService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -44,6 +47,12 @@ public class TagController extends BaseController {
         } catch (Exception e){
             throw new BaseException("系统异常,最热标签获取失败!");
         }
+    }
+
+    @SysLog("获取所有标签信息")
+    @GetMapping
+    public Object getAllTag(){
+        return success(tagService.getAllTag());
     }
 
 }

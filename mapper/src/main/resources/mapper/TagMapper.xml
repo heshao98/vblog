@@ -15,4 +15,20 @@
         select count(0) from vblog_article_tag GROUP BY tag_id desc limit 0,4
     </select>
 
+    <!-- 获取所有标签信息以及每个标签有多少文章 -->
+    <select id="selectAll" resultType="com.ddm.vblog.dto.tag.TagDTO">
+        SELECT
+            t.id,
+            t.tag_name,
+            t.avatar,
+            count( AT.article_id ) AS article_count
+        FROM
+            vblog_tag AS t
+            LEFT JOIN vblog_article_tag AS AT ON t.id = AT.article_id
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+
 </mapper>
