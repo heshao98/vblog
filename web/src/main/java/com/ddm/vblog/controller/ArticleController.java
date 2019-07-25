@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
+import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.ArticleService;
@@ -71,10 +72,9 @@ public class ArticleController extends BaseController {
      */
     @GetMapping
     public Object loadArticle(com.ddm.vblog.page.Page<Article> page,
-                              @RequestParam(required = false) String date,
-                              @RequestParam(required = false) String tag) {
+                              ArticleQueryParamsDTO queryParams) {
         try {
-            return success(articleService.loadHomeArticle(page,date,tag));
+            return success(articleService.loadHomeArticle(page,queryParams));
         } catch (Exception e) {
             e.printStackTrace();
             throw new BaseException("系统异常,文章加载失败!",e);

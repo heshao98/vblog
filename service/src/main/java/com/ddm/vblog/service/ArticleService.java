@@ -2,6 +2,7 @@ package com.ddm.vblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.page.Page;
 
@@ -54,11 +55,10 @@ public interface ArticleService extends IService<Article> {
     /**
      * 加载首页文章数据
      * @param page 分页信息
-     * @param date 日期
-     * @param tag 标签
+     * @param queryParams 查询条件字段对象
      * @return 分页信息、文章列表
      */
-    IPage<Article> loadHomeArticle(Page page, String date, String tag);
+    IPage<Article> loadHomeArticle(Page page, ArticleQueryParamsDTO queryParams);
 
     /**
      * 获取一个文章的评论数

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.ArticleView;
 import com.ddm.vblog.mapper.ArticleMapper;
@@ -129,19 +130,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
     }
 
-    /**
-     * 加载首页文章数据
-     * @param page 分页信息
-     * @param date 日期
-     * @param tag 标签
-     * @return 分页信息、文章列表
-     */
     @SuppressWarnings("unchecked")
     @Override
-    public IPage<Article> loadHomeArticle(com.ddm.vblog.page.Page page, String date, String tag) {
+    public IPage<Article> loadHomeArticle(com.ddm.vblog.page.Page page, ArticleQueryParamsDTO queryParams) {
         IPage<Article> iPage = new Page<>();
         page.setCurrent((page.getCurrent()-1) * page.getSize());
-        iPage.setRecords(articleMapper.selectByPage(page,date,tag));
+        iPage.setRecords(articleMapper.selectByPage(page,queryParams));
         iPage.getRecords().forEach(item -> item.setViewNum(redisUtil.hmCountKey(REDIS_VIEW_COUNT + item.getId()).intValue()));
         return iPage;
     }

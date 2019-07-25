@@ -2,6 +2,7 @@ package com.ddm.vblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.page.Page;
 import org.apache.ibatis.annotations.Param;
@@ -51,5 +52,5 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param page 分页信息
      * @return 文章数据
      */
-    List<Article> selectByPage(@Param("page") Page page, @Param("date") String date, @Param("tag") String tag);
+    List<Article> selectByPage(@Param("page") Page page, @Param("queryParams") ArticleQueryParamsDTO queryParams);
 }

@@ -148,7 +148,7 @@
         FROM
             (
             SELECT
-                id,
+                vblog_article.id,
                 user_id,
                 nickname,
                 title,
@@ -156,17 +156,27 @@
                 comment_num,
                 weight,
                 category_id,
-                create_time,
-                update_time
+                vblog_article.create_time,
+                vblog_article.update_time
             FROM
                 vblog_article
-            <if test="date != null and date != ''">
-                where DATE_FORMAT(create_time, '%Y-%m') = #{date}
-            </if>
+                <if test="queryParams.tagId != null and queryParams.tagId != ''">
+                    LEFT JOIN vblog_article_tag AS vt ON vblog_article.id = vt.article_id
+                    LEFT JOIN vblog_tag AS t ON vt.tag_id = t.id
+                    WHERE t.id = #{queryParams.tagId}
+                </if>
                 LIMIT #{page.current},#{page.size}
             ) AS a
             LEFT JOIN vblog_article_tag AS vt ON a.id = vt.article_id
             LEFT JOIN vblog_tag AS t ON vt.tag_id = t.id
+            <where>
+                <if test="queryParams.date != null and queryParams.date != ''">
+                    AND DATE_FORMAT(a.create_time, '%Y-%m') = #{queryParams.date}
+                </if>
+                <if test="queryParams.categoryId != null and queryParams.categoryId != ''">
+                    AND a.category_id = #{queryParams.categoryId}
+                </if>
+            </where>
         ORDER BY
             create_time DESC
     </select>
