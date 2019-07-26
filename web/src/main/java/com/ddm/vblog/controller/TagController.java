@@ -3,17 +3,17 @@ package com.ddm.vblog.controller;
 
 import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
-import com.ddm.vblog.dto.tag.TagDTO;
-import com.ddm.vblog.entity.Tag;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
+import javax.validation.constraints.Min;
 
 /**
  * <p>
@@ -24,6 +24,7 @@ import java.util.List;
  * @since 2019-01-29
  */
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/tags")
 public class TagController extends BaseController {
@@ -37,7 +38,6 @@ public class TagController extends BaseController {
 
     /**
      * 获取最热的一组标签(4 个)
-     * @return
      */
     @SysLog("获取最热标签信息")
     @GetMapping(value = "/hot_tag")
@@ -53,6 +53,13 @@ public class TagController extends BaseController {
     @GetMapping
     public Object getAllTag(){
         return success(tagService.getAllTag());
+    }
+
+    @SysLog("根据标签id获取标签详情")
+    @GetMapping("/detail/{id}")
+    public Object getTagById(@PathVariable @Min(value = 1,
+            message = "参数类型不正确,或者参数范围不正确!") Integer id){
+        return success(tagService.getById(id));
     }
 
 }

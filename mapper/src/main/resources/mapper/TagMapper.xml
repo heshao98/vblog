@@ -20,11 +20,11 @@
         SELECT
             t.id,
             t.tag_name,
-            t.avatar,
-            count( AT.article_id ) AS article_count
+        t.avatar,
+        count( AT.article_id ) AS article_count
         FROM
             vblog_tag AS t
-            LEFT JOIN vblog_article_tag AS AT ON t.id = AT.article_id
+            LEFT JOIN vblog_article_tag AS AT ON t.id = AT.tag_id
         GROUP BY
             t.id
         ORDER BY

@@ -2,6 +2,7 @@ package com.ddm.vblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ddm.vblog.dto.article.ArticleFileDTO;
 import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.page.Page;
@@ -35,7 +36,7 @@ public interface ArticleService extends IService<Article> {
      * 获取文章归档视图
      * @return
      */
-    List<String> fileArticle();
+    List<ArticleFileDTO> fileArticle();
 
     /**
      * 获取该文章的详细信息

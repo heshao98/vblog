@@ -94,9 +94,9 @@
         from vblog_article order by create_time desc
     </select>
 
-    <!-- 取到文章创建时间的所有月份 -->
-    <select id="fileArticle" resultType="java.lang.String">
-        select date_format(create_time,'%Y-%m') as time from vblog_article GROUP BY time
+    <!-- 取到文章创建时间的所有月份和月份中的文章数量 -->
+    <select id="fileArticle" resultType="com.ddm.vblog.dto.article.ArticleFileDTO">
+        select date_format(create_time,'%Y-%m') as date,count(id) as articleCount from vblog_article GROUP BY date order by date desc
     </select>
 
     <!-- 获取该文章的详细信息 -->

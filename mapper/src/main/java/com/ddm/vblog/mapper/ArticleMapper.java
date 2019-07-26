@@ -2,6 +2,7 @@ package com.ddm.vblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ddm.vblog.dto.article.ArticleFileDTO;
 import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.page.Page;
@@ -37,7 +38,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * 获取文章归档视图
      * @return 文章归档信息
      */
-    List<String> fileArticle();
+    List<ArticleFileDTO> fileArticle();
 
     /**
      * 获取该文章的详细信息
