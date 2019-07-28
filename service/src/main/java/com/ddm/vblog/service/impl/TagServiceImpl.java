@@ -1,5 +1,7 @@
 package com.ddm.vblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.dto.tag.TagDTO;
 import com.ddm.vblog.entity.Tag;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -58,5 +61,19 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
             return tagList;
         }
         return redisUtil.getList(TagDTO.class,"Tag");
+    }
+
+    @Override
+    public List<Integer> getAllTagIdList() {
+        //编写sql表达式
+        LambdaQueryWrapper<Tag> selectAllTagId = new QueryWrapper<Tag>().lambda()
+                .select(Tag::getId);
+
+        List<Tag> idList = tagMapper.selectList(selectAllTagId);
+
+        if(CollectionUtils.isEmpty(idList)){
+            return new ArrayList<>();
+        }
+        return idList.stream().map(Tag::getId).collect(Collectors.toList());
     }
 }

@@ -5,16 +5,23 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ddm.vblog.annotation.SysLog;
 import com.ddm.vblog.base.BaseController;
+import com.ddm.vblog.dto.article.AddArticleParamDTO;
 import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.exception.BaseException;
 import com.ddm.vblog.service.ArticleService;
+import com.ddm.vblog.service.TagService;
+import com.ddm.vblog.utils.ValidatorUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -33,6 +40,12 @@ public class ArticleController extends BaseController {
      */
     @Resource
     private ArticleService articleService;
+
+    /**
+     * 注入标签逻辑层Bean
+     */
+    @Resource
+    private TagService tagService;
 
     @SysLog("获取最热文章")
     @GetMapping("/hot")
@@ -70,6 +83,7 @@ public class ArticleController extends BaseController {
      * 首页加载文章数据
      * @return 首页的文章数据信息
      */
+    @SysLog("文章首页视图加载")
     @GetMapping
     public Object loadArticle(com.ddm.vblog.page.Page<Article> page,
                               ArticleQueryParamsDTO queryParams) {
@@ -100,6 +114,27 @@ public class ArticleController extends BaseController {
             e.printStackTrace();
             throw new BaseException("系统异常,获取文章失败!");
         }
+    }
+
+    @SysLog("发布文章")
+    @PostMapping
+    public Object publishArticle(AddArticleParamDTO addArticle){
+        ValidatorUtils.validateEntity(addArticle);
+        String tagIdStr = addArticle.getTagIds();
+        List<String> tagIds = Arrays.asList(tagIdStr.split(","));
+        boolean tagIdListIsNull = CollectionUtils.isEmpty(tagIds);
+        if(tagIdListIsNull){
+            return error("标签id不能为空！");
+        }
+
+        List<Integer> allTagIdList = tagService.getAllTagIdList();
+        List<Integer> testTagId = allTagIdList.stream().filter(id -> tagIds.contains(String.valueOf(String.valueOf(id)))).collect(Collectors.toList());
+        if(CollectionUtils.isNotEmpty(testTagId)){
+            return error("标签参数范围不正确");
+        }
+
+        int result = articleService.addArticle(addArticle);
+        return null;
     }
 }
 

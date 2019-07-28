@@ -27,4 +27,5 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @return 文章信息集合
      */
     List<TagDTO> selectAll();
+
 }

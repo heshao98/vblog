@@ -32,4 +32,15 @@ public interface TagService extends IService<Tag> {
      * @return 标签信息集合
      */
     List<TagDTO> getAllTag();
+
+    /**
+     * 获取数据库中所有的标签id
+     * @author ddm
+     * @Description 说明
+     * @update （无）
+     * @version 1.0
+     * @date 2019/7/28 20:45
+     * @return id集合
+     */
+    List<Integer> getAllTagIdList();
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ddm.vblog.dto.article.AddArticleParamDTO;
 import com.ddm.vblog.dto.article.ArticleFileDTO;
 import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
@@ -15,11 +16,14 @@ import com.ddm.vblog.shiro.ShiroSubjectManager;
 import com.ddm.vblog.utils.LocalDateTimeUtils;
 import com.ddm.vblog.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.util.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,5 +153,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public int getCommentCount(String articleId) {
         return articleMapper.selectOne(new QueryWrapper<Article>().eq("id",articleId)).getCommentNum();
+    }
+
+    @Override
+    public int addArticle(AddArticleParamDTO addArticle) {
+        return 0;
     }
 }

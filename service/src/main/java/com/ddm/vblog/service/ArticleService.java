@@ -2,6 +2,7 @@ package com.ddm.vblog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ddm.vblog.dto.article.AddArticleParamDTO;
 import com.ddm.vblog.dto.article.ArticleFileDTO;
 import com.ddm.vblog.dto.article.ArticleQueryParamsDTO;
 import com.ddm.vblog.entity.Article;
@@ -67,4 +68,16 @@ public interface ArticleService extends IService<Article> {
      * @return 文章评论数
      */
     int getCommentCount(String articleId);
+
+    /**
+     * 用户发布文章
+     * @author ddm
+     * @Description 说明
+     * @update （无）
+     * @version 1.0
+     * @date 2019/7/28 20:37
+     * @param addArticle 文章发布所需要信息
+     * @return 是否成功
+     */
+    int addArticle(AddArticleParamDTO addArticle);
 }
