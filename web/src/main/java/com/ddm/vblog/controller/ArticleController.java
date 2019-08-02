@@ -120,19 +120,20 @@ public class ArticleController extends BaseController {
     @PostMapping
     public Object publishArticle(AddArticleParamDTO addArticle){
         ValidatorUtils.validateEntity(addArticle);
+
         String tagIdStr = addArticle.getTagIds();
         List<String> tagIds = Arrays.asList(tagIdStr.split(","));
+
         boolean tagIdListIsNull = CollectionUtils.isEmpty(tagIds);
         if(tagIdListIsNull){
             return error("标签id不能为空！");
         }
 
         List<Integer> allTagIdList = tagService.getAllTagIdList();
-        List<Integer> testTagId = allTagIdList.stream().filter(id -> tagIds.contains(String.valueOf(String.valueOf(id)))).collect(Collectors.toList());
+        List<Integer> testTagId = allTagIdList.stream().filter(id -> !tagIds.contains(String.valueOf(String.valueOf(id)))).collect(Collectors.toList());
         if(CollectionUtils.isNotEmpty(testTagId)){
             return error("标签参数范围不正确");
         }
-
         int result = articleService.addArticle(addArticle);
         return null;
     }

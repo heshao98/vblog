@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ddm.vblog.entity.ArticleTag;
 import com.ddm.vblog.mapper.ArticleTagMapper;
 import com.ddm.vblog.service.ArticleTagService;
+import com.ddm.vblog.utils.Stringer;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag> implements ArticleTagService {
 
+
+    @Override
+    public int saveArticleTagBatch(String tagStr, String articleId) {
+        if(Stringer.isBatchNullOrEmpty(tagStr,articleId)){
+            return -1;
+        }
+
+        String[] tagIds = tagStr.split(",");
+        if(tagIds.length == 0){
+            return 0;
+        }
+
+        List<ArticleTag> articleTagList = new ArrayList<>();
+        for (String tagId : tagIds) {
+            ArticleTag articleTag = new ArticleTag();
+            articleTag.setArticleId(articleId);
+            articleTag.setTagId(Integer.valueOf(tagId));
+            articleTagList.add(articleTag);
+        }
+        this.saveBatch(articleTagList);
+        return 1;
+    }
 }

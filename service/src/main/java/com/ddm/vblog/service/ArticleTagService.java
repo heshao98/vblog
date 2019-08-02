@@ -13,4 +13,16 @@ import com.ddm.vblog.entity.ArticleTag;
  */
 public interface ArticleTagService extends IService<ArticleTag> {
 
+    /**
+     * 保存文章和标签的关联关系
+     * @author heShaoHua
+     * @describe 暂无
+     * @param tagIds 标签id字符串(逗号分隔)
+     * @param articleId 文章id
+     * @updateInfo 暂无
+     * @date 2019/8/2 17:23
+     * @return 是否成功
+     */
+    int saveArticleTagBatch(String tagIds, String articleId);
+
 }

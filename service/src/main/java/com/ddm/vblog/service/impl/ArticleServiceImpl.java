@@ -11,19 +11,19 @@ import com.ddm.vblog.entity.Article;
 import com.ddm.vblog.entity.ArticleView;
 import com.ddm.vblog.mapper.ArticleMapper;
 import com.ddm.vblog.service.ArticleService;
+import com.ddm.vblog.service.ArticleTagService;
 import com.ddm.vblog.service.ArticleViewService;
 import com.ddm.vblog.shiro.ShiroSubjectManager;
 import com.ddm.vblog.utils.LocalDateTimeUtils;
 import com.ddm.vblog.utils.RedisUtil;
+import com.ddm.vblog.utils.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.util.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotBlank;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +52,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @Resource
     private ArticleViewService articleViewService;
+
+    @Resource
+    private ArticleTagService articleTagService;
 
     @Resource
     private RedisUtil redisUtil;
@@ -155,8 +158,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleMapper.selectOne(new QueryWrapper<Article>().eq("id",articleId)).getCommentNum();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int addArticle(AddArticleParamDTO addArticle) {
+        Article article = new Article();
+        article.setId(UUIDUtils.generateUuid());
+        BeanUtils.copyProperties(addArticle, article);
+        //保存文章和标签关系
+        articleTagService.saveArticleTagBatch(addArticle.getTagIds(),article.getId());
+
+        //保存文章数据
+        this.save(article);
         return 0;
     }
 }

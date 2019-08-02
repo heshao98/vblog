@@ -272,4 +272,12 @@ public class Stringer {
         return oldString.substring(1,oldString.length() - 1);
     }
 
+    public static boolean isBatchNullOrEmpty(String... str) {
+        for (String s : str) {
+            if(isNullOrEmpty(s)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
